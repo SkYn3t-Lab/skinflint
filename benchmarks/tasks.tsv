@@ -1,0 +1,20 @@
+debounce	coding	short	Add debounce to a search input that currently fires an API call on every keystroke. Show the code.
+dedupe	coding	short	Remove duplicate items from a list in Python while keeping the original order.
+envvar	coding	short	Read a port number from the PORT environment variable in Node.js, defaulting to 3000 if it is unset or invalid.
+offbyone	coding	short	This loop skips the last element: for (let i = 0; i < arr.length - 1; i++) { total += arr[i]; } Fix it.
+retry	coding	short	Retry a failing HTTP request up to three times with exponential backoff in Python.
+cache	coding	long	Add a cache layer for our user profile API responses. Show the code.
+migration	coding	long	Write a database migration that splits a full_name column into first_name and last_name, backfills existing rows, and is safe to run twice. Show the code.
+statemachine	coding	long	Implement an order state machine with created, paid, shipped, delivered, cancelled and refunded states, enforcing legal transitions and rejecting invalid ones. Show the code.
+csvreport	coding	long	Write a script that reads a large CSV of transactions, validates each row, totals amounts per customer, and writes a report without crashing on malformed rows. Show the code.
+ratelimit	coding	long	Implement login with password hashing, sessions, and rate limiting of failed attempts in an Express app. Show the code.
+backref	explain	short	What is a regular expression backreference? Give one short example.
+pooling	explain	short	How does database connection pooling work, and why does it help?
+gitrebase	explain	short	What is the difference between git merge and git rebase?
+unrelated	explain	short	I get 'fatal: refusing to merge unrelated histories' from git. What does it mean and what should I do?
+deadlock	explain	short	Explain what a deadlock is and how to avoid it.
+restgraphql	explain	long	Compare REST and GraphQL for a new public API and recommend one.
+postmortem	explain	long	Write an incident postmortem for a four-hour outage caused by a connection pool exhausted by a slow downstream dependency, with timeline, root cause and remediations.
+monolith	explain	long	Explain how to migrate a monolith to services without a big-bang rewrite, covering ordering, data ownership, and keeping it shippable throughout.
+apidesign	explain	long	Design the REST API for a multi-tenant document store: resources, auth, pagination, versioning and error format. Explain the decisions.
+rerender	explain	long	Why might a React component re-render more often than expected, and how do I fix each cause?

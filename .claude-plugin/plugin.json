@@ -1,0 +1,45 @@
+{
+  "name": "token-miser",
+  "version": "0.2.0",
+  "description": "Short answers, minimal code and shorter tool output for Claude Code, with nothing to install: POSIX sh and awk on Linux and macOS, a self-built exe on Windows.",
+  "author": {
+    "name": "Gr3yF0x87",
+    "url": "https://github.com/Gr3yF0x87"
+  },
+  "homepage": "https://github.com/SkYn3t-Lab/token-miser",
+  "repository": "https://github.com/SkYn3t-Lab/token-miser",
+  "license": "MIT",
+  "keywords": ["tokens", "cost", "concise", "minimal code", "tool output"],
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|resume|clear|compact|fork",
+        "hooks": [
+          { "type": "command", "command": "{ true \"\\\" <# \"; } >/dev/null\n[ -f \"${CLAUDE_PLUGIN_DATA}/token-miser-5b4c500ee24b.exe\" ] && exec \"${CLAUDE_PLUGIN_DATA}/token-miser-5b4c500ee24b.exe\" activate\nexec sh \"${CLAUDE_PLUGIN_ROOT}/hooks/run.sh\" activate\n#> } > $null\nif ([IO.File]::Exists(\"${CLAUDE_PLUGIN_DATA}/token-miser-5b4c500ee24b.exe\")) { [void][Reflection.Assembly]::LoadFile(\"${CLAUDE_PLUGIN_DATA}/token-miser-5b4c500ee24b.exe\"); [void][TokenMiser.Hook]::Main([string[]]@(\"activate\")); break }\npowershell -NoProfile -ExecutionPolicy Bypass -File \"${CLAUDE_PLUGIN_ROOT}/hooks/win/run.ps1\" activate", "timeout": 30, "statusMessage": "Loading token-miser..." }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          { "type": "command", "command": "{ true \"\\\" <# \"; } >/dev/null\n[ -f \"${CLAUDE_PLUGIN_DATA}/token-miser-5b4c500ee24b.exe\" ] && exec \"${CLAUDE_PLUGIN_DATA}/token-miser-5b4c500ee24b.exe\" prompt\nexec sh \"${CLAUDE_PLUGIN_ROOT}/hooks/run.sh\" prompt\n#> } > $null\nif ([IO.File]::Exists(\"${CLAUDE_PLUGIN_DATA}/token-miser-5b4c500ee24b.exe\")) { [void][Reflection.Assembly]::LoadFile(\"${CLAUDE_PLUGIN_DATA}/token-miser-5b4c500ee24b.exe\"); [void][TokenMiser.Hook]::Main([string[]]@(\"prompt\")); break }\npowershell -NoProfile -ExecutionPolicy Bypass -File \"${CLAUDE_PLUGIN_ROOT}/hooks/win/run.ps1\" prompt", "timeout": 30 }
+        ]
+      }
+    ],
+    "SubagentStart": [
+      {
+        "hooks": [
+          { "type": "command", "command": "{ true \"\\\" <# \"; } >/dev/null\n[ -f \"${CLAUDE_PLUGIN_DATA}/token-miser-5b4c500ee24b.exe\" ] && exec \"${CLAUDE_PLUGIN_DATA}/token-miser-5b4c500ee24b.exe\" subagent\nexec sh \"${CLAUDE_PLUGIN_ROOT}/hooks/run.sh\" subagent\n#> } > $null\nif ([IO.File]::Exists(\"${CLAUDE_PLUGIN_DATA}/token-miser-5b4c500ee24b.exe\")) { [void][Reflection.Assembly]::LoadFile(\"${CLAUDE_PLUGIN_DATA}/token-miser-5b4c500ee24b.exe\"); [void][TokenMiser.Hook]::Main([string[]]@(\"subagent\")); break }\npowershell -NoProfile -ExecutionPolicy Bypass -File \"${CLAUDE_PLUGIN_ROOT}/hooks/win/run.ps1\" subagent", "timeout": 30 }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Bash|PowerShell|Agent|WebFetch|WebSearch|Grep|Glob|mcp__.*",
+        "hooks": [
+          { "type": "command", "command": "{ true \"\\\" <# \"; } >/dev/null\n[ -f \"${CLAUDE_PLUGIN_DATA}/token-miser-5b4c500ee24b.exe\" ] && exec \"${CLAUDE_PLUGIN_DATA}/token-miser-5b4c500ee24b.exe\" compress\nexec sh \"${CLAUDE_PLUGIN_ROOT}/hooks/run.sh\" compress\n#> } > $null\nif ([IO.File]::Exists(\"${CLAUDE_PLUGIN_DATA}/token-miser-5b4c500ee24b.exe\")) { [void][Reflection.Assembly]::LoadFile(\"${CLAUDE_PLUGIN_DATA}/token-miser-5b4c500ee24b.exe\"); [void][TokenMiser.Hook]::Main([string[]]@(\"compress\")); break }\npowershell -NoProfile -ExecutionPolicy Bypass -File \"${CLAUDE_PLUGIN_ROOT}/hooks/win/run.ps1\" compress", "timeout": 30 }
+        ]
+      }
+    ]
+  }
+}

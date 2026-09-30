@@ -1,0 +1,21 @@
+{
+ "sessions": 627,
+ "tool_results": 7677,
+ "persisted_left_out": 21,
+ "arms": {
+  "token-miser": {
+   "bytes_before": 12083923,
+   "bytes_after": 11581857,
+   "results_changed": 97,
+   "saved_pct": 4.2,
+   "tokens_saved_est": 125516
+  },
+  "chisle": {
+   "bytes_before": 12083923,
+   "bytes_after": 11595247,
+   "results_changed": 84,
+   "saved_pct": 4.0,
+   "tokens_saved_est": 122169
+  }
+ }
+}

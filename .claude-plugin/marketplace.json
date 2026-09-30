@@ -1,0 +1,17 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "token-miser",
+  "description": "token-miser: short answers, minimal code and shorter tool output for Claude Code. Nothing to install.",
+  "owner": {
+    "name": "Gr3yF0x87",
+    "url": "https://github.com/Gr3yF0x87"
+  },
+  "plugins": [
+    {
+      "name": "token-miser",
+      "description": "Spend fewer tokens: short answers, minimal code, trimmed tool output.",
+      "source": "./",
+      "category": "productivity"
+    }
+  ]
+}
