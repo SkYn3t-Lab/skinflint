@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/logo.png" alt="skinflint" width="200">
+  <img src="https://raw.githubusercontent.com/SkYn3t-Lab/skinflint-tests/main/assets/logo.png" alt="skinflint" width="200">
 </p>
 
 <h1 align="center">skinflint</h1>
@@ -353,8 +353,8 @@ correctness without knowing which plugin wrote it. Plugins:
 [caveman](https://github.com/JuliusBrussee/caveman) 2.7.0.
 
 <p align="center"><picture>
-  <source media="(prefers-color-scheme: dark)" srcset="assets/charts/output-overall-dark.png">
-  <img src="assets/charts/output-overall-light.png" width="720" alt="Output tokens as a share of no plugin: skinflint 49%, chisle 63%, ponytail 67%, caveman 75%">
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/SkYn3t-Lab/skinflint-tests/main/assets/charts/output-overall-dark.png">
+  <img src="https://raw.githubusercontent.com/SkYn3t-Lab/skinflint-tests/main/assets/charts/output-overall-light.png" width="720" alt="Output tokens as a share of no plugin: skinflint 49%, chisle 63%, ponytail 67%, caveman 75%">
 </picture></p>
 
 | Plugin | Output tokens, all tasks | Average task | Worst task | Tasks longer than no plugin | Correct answers |
@@ -374,8 +374,8 @@ answers they missed were spread across plugins rather than piling up in one.
 The extra runs on four tasks exist to check exactly that.
 
 <p align="center"><picture>
-  <source media="(prefers-color-scheme: dark)" srcset="assets/charts/output-by-kind-dark.png">
-  <img src="assets/charts/output-by-kind-light.png" width="720" alt="Output tokens by kind of task for each plugin">
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/SkYn3t-Lab/skinflint-tests/main/assets/charts/output-by-kind-dark.png">
+  <img src="https://raw.githubusercontent.com/SkYn3t-Lab/skinflint-tests/main/assets/charts/output-by-kind-light.png" width="720" alt="Output tokens by kind of task for each plugin">
 </picture></p>
 
 | Kind of task | skinflint | [chisle](https://github.com/JayPokale/Chisle) | [ponytail](https://github.com/dietrichgebert/ponytail) | [caveman](https://github.com/JuliusBrussee/caveman) |
@@ -497,8 +497,8 @@ every plugin alike, with [`benchmarks/speed.py`](https://github.com/SkYn3t-Lab/s
 and [`benchmarks/speed.ps1`](https://github.com/SkYn3t-Lab/skinflint-tests/blob/main/benchmarks/speed.ps1) on Windows 11.
 
 <p align="center"><picture>
-  <source media="(prefers-color-scheme: dark)" srcset="assets/charts/speed-dark.png">
-  <img src="assets/charts/speed-light.png" width="720" alt="Hook time on every prompt for each plugin, on Linux and three Windows shells">
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/SkYn3t-Lab/skinflint-tests/main/assets/charts/speed-dark.png">
+  <img src="https://raw.githubusercontent.com/SkYn3t-Lab/skinflint-tests/main/assets/charts/speed-light.png" width="720" alt="Hook time on every prompt for each plugin, on Linux and three Windows shells">
 </picture></p>
 
 | Linux, ms | startup | prompt | subagent | 30 KB log | 150 KB log | 150 KB JSON |
