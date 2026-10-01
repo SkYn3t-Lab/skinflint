@@ -1,1 +1,0 @@
-{"hookSpecificOutput":{"hookEventName":"PostToolUse","updatedToolOutput":{"stdout":"test_case_0 ... ok\n[skinflint: 58 more passing lines]\ntest_case_59 ... ok","stderr":"","interrupted":false,"isImage":false}}}

@@ -41,7 +41,7 @@ keeps every one that carries a fact.
   implementations, 176 test cases that must produce identical bytes on both.
 
 Same model, same question, one difference: skinflint. Both answers are
-verbatim from the [benchmark run](benchmarks/results/2026-09-30/cells.jsonl),
+verbatim from the [benchmark run](https://github.com/SkYn3t-Lab/skinflint-tests/blob/main/benchmarks/results/2026-09-30/cells.jsonl),
 except that headings are shown in bold so they do not become sections of this
 page:
 
@@ -412,8 +412,8 @@ The extra runs on four tasks exist to check exactly that.
 | `rerender` | explain, long | 1436 | **47** | 70 | 63 | 57 |
 
 Figures are % of no plugin, the lowest in bold. Every prompt is in
-[`benchmarks/tasks.tsv`](benchmarks/tasks.tsv) and every answer with its grade
-in [`benchmarks/results/2026-09-30/cells.jsonl`](benchmarks/results/2026-09-30/cells.jsonl).
+[`benchmarks/tasks.tsv`](https://github.com/SkYn3t-Lab/skinflint-tests/blob/main/benchmarks/tasks.tsv) and every answer with its grade
+in [`benchmarks/results/2026-09-30/cells.jsonl`](https://github.com/SkYn3t-Lab/skinflint-tests/blob/main/benchmarks/results/2026-09-30/cells.jsonl).
 
 </details>
 
@@ -454,7 +454,8 @@ In plain terms: Claude writes about half as many output tokens with
 skinflint, so roughly $51 of every $100 you spend on Claude's output stays in
 your pocket, and trimmed tool output saves a little more on top.
 
-**Your own number.** Run this against your own Claude Code history; it reads
+**Your own number.** Run this from a clone of [skinflint-tests](https://github.com/SkYn3t-Lab/skinflint-tests)
+against your own Claude Code history; it reads
 token counts and sizes only, never the text of your sessions:
 
 ```sh
@@ -477,21 +478,23 @@ your sessions run.
 
 </details>
 
-Reproduce everything with
+The benchmark scripts and their results live in their own repository,
+[skinflint-tests](https://github.com/SkYn3t-Lab/skinflint-tests), so that installing the plugin does not download them.
+Reproduce everything from a clone of it with
 `ARMS="none:- skinflint:<dir> ..." bash benchmarks/run-arms.sh OUTDIR`,
 `bash benchmarks/grade.sh OUTDIR GRADES.json`,
 `python3 benchmarks/analyze-arms.py OUTDIR GRADES.json`,
-`python3 benchmarks/replay.py --arm skinflint='sh hooks/run.sh compress' ~/.claude/projects --out R.json`
+`python3 benchmarks/replay.py --arm skinflint='sh <dir>/hooks/run.sh compress' ~/.claude/projects --out R.json`
 and `python3 benchmarks/usage.py`. The data behind every number here is in
-[`benchmarks/results/2026-09-30/`](benchmarks/results/2026-09-30/).
+[`benchmarks/results/2026-09-30/`](https://github.com/SkYn3t-Lab/skinflint-tests/tree/main/benchmarks/results/2026-09-30).
 
 ### Faster hooks
 
 Every hook Claude Code runs costs time on every prompt, tool call and session
 start. Each plugin's own hook commands were timed the way Claude Code runs
 them, as medians of 41 interleaved rounds so that load on the machine falls on
-every plugin alike, with [`benchmarks/speed.py`](benchmarks/speed.py) on Linux
-and [`benchmarks/speed.ps1`](benchmarks/speed.ps1) on Windows 11.
+every plugin alike, with [`benchmarks/speed.py`](https://github.com/SkYn3t-Lab/skinflint-tests/blob/main/benchmarks/speed.py) on Linux
+and [`benchmarks/speed.ps1`](https://github.com/SkYn3t-Lab/skinflint-tests/blob/main/benchmarks/speed.ps1) on Windows 11.
 
 <p align="center"><picture>
   <source media="(prefers-color-scheme: dark)" srcset="assets/charts/speed-dark.png">
@@ -541,11 +544,15 @@ sees the `sh` lines inside a block comment and runs the lines after it.
 
 ## Tests
 
+The tests live in [skinflint-tests](https://github.com/SkYn3t-Lab/skinflint-tests). Clone it beside this repository and
+run:
+
 ```sh
-sh tests/golden.sh                                            # POSIX
-powershell -ExecutionPolicy Bypass -File tests\golden.ps1     # Windows
+sh skinflint-tests/tests/golden.sh                                            # POSIX
+powershell -ExecutionPolicy Bypass -File skinflint-tests\tests\golden.ps1     # Windows
 ```
 
+Both test the plugin in `../skinflint`; set `PLUGIN_ROOT` to test another copy.
 `tests/cases/` holds one case per behaviour in SPEC.md, each with its input,
 expected output and expected files on disk. `golden.sh` runs every case through
 the real hook line; `golden.ps1` runs it through the Windows program. Both pass

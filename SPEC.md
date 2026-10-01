@@ -3,8 +3,8 @@
 This file is the contract. There are two implementations, POSIX sh + awk
 (`hooks/*.sh`, `hooks/lib/*.awk`) and C# (`hooks/win/skinflint.cs`), and
 for the same input and the same files on disk they must produce the same
-bytes, apart from the platform differences named in section 8. The tests in
-`tests/` are generated from this document, not from either implementation.
+bytes, apart from the platform differences named in section 8. The tests, in
+the [skinflint-tests](https://github.com/SkYn3t-Lab/skinflint-tests) repository, are generated from this document, not from either implementation.
 
 ## 1. Units and text rules
 

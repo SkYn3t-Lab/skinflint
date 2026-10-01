@@ -2,7 +2,7 @@
 # Stamps the Windows build id (first 12 hex digits of the SHA-256 of
 # hooks/win/skinflint.cs) into hooks/win/run.ps1 and writes the hook lines
 # of .claude-plugin/plugin.json. Run after any change to the C# source;
-# tests/golden.sh fails while the stamp is stale.
+# the golden tests (skinflint-tests) fail while the stamp is stale.
 #   sh tools/stamp.sh              rewrite
 #   sh tools/stamp.sh --check      exit 1 if anything would change
 #   sh tools/stamp.sh --line HOOK  print one hook line as Claude Code runs it
