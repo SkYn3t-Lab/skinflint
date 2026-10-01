@@ -402,8 +402,9 @@ function tail_bytes(s, n,   st) {
 
 function cut300(l) { return length(l) > 300 ? head_bytes(l, 300) "..." : l }
 
-function num(k, fb,   v) {
-  v = ENVIRON["SKINFLINT_" k]
+# Every environment variable is read by its full name, so that the list of
+# what this program reads from the environment can be found by searching it.
+function num(v, fb) {
   if (v !~ /^[0-9]+$/ || length(v) > 9 || v + 0 <= 0) return fb
   return v + 0
 }
@@ -459,7 +460,7 @@ function sections(   i, p, raw, id, v, st) {
   if (CFG_CODE != "") CODE = CFG_CODE
   if (CFG_PROSE != "") return
   for (i = 1; i <= 3; i++) {
-    p = ENVIRON["SF_S" i]
+    p = i == 1 ? ENVIRON["SF_S1"] : i == 2 ? ENVIRON["SF_S2"] : ENVIRON["SF_S3"]
     if (p == "") continue
     raw = no_bom(readfile(p))
     if (!index(raw, "\"outputStyle\"") || !valid_utf8(raw)) continue
@@ -574,7 +575,8 @@ function hook_compress(   tool, resp, ti, i, v, k, unit, total, saved, dup, rc, 
 
   TOOL = tool; SAFE_TOOL = safe(tool); if (SAFE_TOOL == "") SAFE_TOOL = "tool"
   TUID = safe(jstr(ROOT, "tool_use_id"))
-  MAX = num("MAX_BYTES", 8000); HEAD = num("HEAD_LINES", 60); TAIL = num("TAIL_LINES", 40)
+  MAX = num(ENVIRON["SKINFLINT_MAX_BYTES"], 8000)
+  HEAD = num(ENVIRON["SKINFLINT_HEAD_LINES"], 60); TAIL = num(ENVIRON["SKINFLINT_TAIL_LINES"], 40)
   VIEW = ((tool == "Bash" || tool == "PowerShell") && ti && JT[ti] == "o" && is_view(jstr(ti, "command")))
 
   # U+0000 (C0 80 here) is removed first: Windows tools that write UTF-16

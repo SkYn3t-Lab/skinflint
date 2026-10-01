@@ -98,6 +98,9 @@ EOF
 sed "s/skinflint-[A-Za-z0-9]*\\.exe'/skinflint-$id.exe'/" hooks/win/run.ps1 > "$tmp.ps1"
 # hooks/run.sh with the awk program between its two marker lines: one
 # single-quoted shell string, so every apostrophe in the source becomes '\''.
+# skinflint: the program is one argument to awk, and Linux allows 128 KiB per
+# argument; split the program if it ever grows past that.
+[ "$(wc -c < hooks/lib/skinflint.awk)" -lt 120000 ] || { echo "skinflint.awk is too large to embed as one argument" >&2; exit 1; }
 {
   sed -n '1,/^# >>> skinflint\.awk$/p' hooks/run.sh
   printf "prog='"
