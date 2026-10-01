@@ -8,6 +8,10 @@
   },
   "homepage": "https://github.com/SkYn3t-Lab/skinflint",
   "repository": "https://github.com/SkYn3t-Lab/skinflint",
+  "documentationUrl": "https://github.com/SkYn3t-Lab/skinflint#readme",
+  "supportUrl": "https://github.com/SkYn3t-Lab/skinflint/issues",
+  "privacyPolicyUrl": "https://github.com/SkYn3t-Lab/skinflint/blob/main/PRIVACY.md",
+  "termsOfServiceUrl": "https://github.com/SkYn3t-Lab/skinflint/blob/main/TERMS.md",
   "license": "MIT",
   "keywords": ["tokens", "cost", "concise", "minimal code", "tool output"],
   "hooks": {

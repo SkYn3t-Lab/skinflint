@@ -564,4 +564,5 @@ cases (the only part that needs Python).
 
 ## License
 
-MIT. See [LICENSE](LICENSE).
+MIT. See [LICENSE](LICENSE). What skinflint reads and keeps is in
+[PRIVACY.md](PRIVACY.md); the terms of use are in [TERMS.md](TERMS.md).
