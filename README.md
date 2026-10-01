@@ -540,7 +540,9 @@ Bash on Windows, and with PowerShell on Windows without Git Bash. Each hook is
 one command that reads correctly in both languages: `sh` sees a no-op group
 and then `exec`s the right program, so it never reads further; PowerShell
 sees the `sh` lines inside a block comment and runs the lines after it.
-`tools/stamp.sh` writes these lines into `.claude-plugin/plugin.json`.
+`tools/stamp.sh` writes these lines into `.claude-plugin/plugin.json`, and embeds
+the awk program (`hooks/lib/skinflint.awk`) in `hooks/run.sh`, so that the POSIX
+hook is one file that runs no other.
 
 ## Tests
 
