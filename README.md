@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/SkYn3t-Lab/skinflint-tests/main/assets/logo.png" alt="skinflint" width="200">
+  <img src="https://raw.githubusercontent.com/SkYn3t-Lab/skinflint-tests/main/assets/header.jpg" alt="Skinflint, cheap, thrifty: a grey fox in a waistcoat counting coins into jars in its den" width="100%">
 </p>
 
 <h1 align="center">skinflint</h1>
