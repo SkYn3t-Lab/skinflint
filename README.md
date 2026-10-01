@@ -2,8 +2,6 @@
   <img src="https://raw.githubusercontent.com/SkYn3t-Lab/skinflint-tests/main/assets/skinflint-header.jpg" alt="Skinflint: a grey fox in spectacles and a patched coat inspecting a coin at a desk stacked with coins and jars" width="100%">
 </p>
 
-<h1 align="center">skinflint</h1>
-
 <p align="center">
   <b>Make Claude Code say more with fewer tokens.</b><br>
   Shorter answers, leaner code, trimmed tool output. Zero dependencies.
