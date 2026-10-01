@@ -11,8 +11,8 @@ umask 077
 # Plugin root: set by Claude Code, else two levels up from this file.
 root=${CLAUDE_PLUGIN_ROOT:-}
 if [ -z "$root" ]; then
-  case $0 in */*) root=${0%/*} ;; *) root=. ;; esac
-  case $root in */hooks) root=${root%/hooks} ;; hooks) root=. ;; *) root=$root/.. ;; esac
+  case $0 in */*) root=${0%/*} ;; *) root=$PWD ;; esac
+  case $root in */hooks) root=${root%/hooks} ;; hooks) root=$PWD ;; *) root=$root/.. ;; esac
 fi
 
 dir=${CLAUDE_CONFIG_DIR:-}
@@ -38,7 +38,7 @@ cfg=$cfg/skinflint/config.json
 SF_BB=
 oifs=$IFS; IFS=:
 for d in $PATH; do
-  [ -n "$d" ] || d=.
+  [ -n "$d" ] || d=$PWD
   if [ -x "$d/awk" ]; then
     { [ "$d/awk" -ef /bin/busybox ] || [ "$d/awk" -ef /usr/bin/busybox ]; } && SF_BB=1
     break
