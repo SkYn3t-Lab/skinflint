@@ -16,31 +16,31 @@ if [ -z "$root" ]; then
 fi
 
 dir=${CLAUDE_CONFIG_DIR:-}
-[ -n "$dir" ] || dir=${HOME:-}/.claude
+if [ -z "$dir" ]; then dir=${HOME:-}/.claude; fi
 while :; do case $dir in ?*/) dir=${dir%/} ;; *) break ;; esac; done
 state=$dir/skinflint
 [ -d "$state/spill" ] || mkdir -p "$state/sessions" "$state/spill" 2>/dev/null
-[ -d "$state/sessions" ] && [ -w "$state/sessions" ] && SF_W=1
-[ -d "$state/spill" ] && [ -w "$state/spill" ] && SF_WS=1
-[ -e "$state/stats" ] && SF_STATS=1
+if [ -d "$state/sessions" ] && [ -w "$state/sessions" ]; then SF_W=1; fi
+if [ -d "$state/spill" ] && [ -w "$state/spill" ]; then SF_WS=1; fi
+if [ -e "$state/stats" ]; then SF_STATS=1; fi
 
 cfg=${XDG_CONFIG_HOME:-}
-[ -n "$cfg" ] || cfg=${HOME:-}/.config
+if [ -z "$cfg" ]; then cfg=${HOME:-}/.config; fi
 cfg=$cfg/skinflint/config.json
-[ -f "$cfg" ] && [ -r "$cfg" ] && SF_CFG=$cfg
-[ -f .claude/skinflint.json ] && [ -r .claude/skinflint.json ] && SF_PC=.claude/skinflint.json
-[ -f .claude/settings.local.json ] && [ -r .claude/settings.local.json ] && SF_S1=.claude/settings.local.json
-[ -f .claude/settings.json ] && [ -r .claude/settings.json ] && SF_S2=.claude/settings.json
-[ -f "$dir/settings.json" ] && [ -r "$dir/settings.json" ] && SF_S3=$dir/settings.json
+if [ -f "$cfg" ] && [ -r "$cfg" ]; then SF_CFG=$cfg; fi
+if [ -f .claude/skinflint.json ] && [ -r .claude/skinflint.json ]; then SF_PC=.claude/skinflint.json; fi
+if [ -f .claude/settings.local.json ] && [ -r .claude/settings.local.json ]; then SF_S1=.claude/settings.local.json; fi
+if [ -f .claude/settings.json ] && [ -r .claude/settings.json ]; then SF_S2=.claude/settings.json; fi
+if [ -f "$dir/settings.json" ] && [ -r "$dir/settings.json" ]; then SF_S3=$dir/settings.json; fi
 
 # busybox awk needs its big-string work done in pieces (see skinflint.awk). Found
 # with builtins only: the first awk on PATH, compared by inode.
 SF_BB=
 oifs=$IFS; IFS=:
 for d in $PATH; do
-  [ -n "$d" ] || d=$PWD
+  if [ -z "$d" ]; then d=$PWD; fi
   if [ -x "$d/awk" ]; then
-    { [ "$d/awk" -ef /bin/busybox ] || [ "$d/awk" -ef /usr/bin/busybox ]; } && SF_BB=1
+    if [ "$d/awk" -ef /bin/busybox ] || [ "$d/awk" -ef /usr/bin/busybox ]; then SF_BB=1; fi
     break
   fi
 done
@@ -50,11 +50,11 @@ SF_HOOK=$1 SF_ROOT=$root SF_STATE=$state SF_CLAUDE_DIR=$dir
 export SF_HOOK SF_ROOT SF_STATE SF_CLAUDE_DIR SF_W SF_WS SF_STATS SF_CFG SF_PC SF_S1 SF_S2 SF_S3 SF_BB
 
 # The awk program is embedded here so that a hook runs this one file and
-# nothing else. tools/stamp.sh writes the block from hooks/lib/skinflint.awk:
-# edit that file, never this block.
+# nothing else. The stamp tool writes the block from the awk source file in
+# the lib folder beside this script: edit that file, never this block.
 # BEGIN skinflint.awk
 prog='# skinflint hooks in POSIX awk (mawk, gawk, BWK awk, busybox awk).
-# hooks/run.sh runs this with LC_ALL=C, so every string operation is on bytes.
+# The hook script runs this with LC_ALL=C, so every string operation is on bytes.
 # Section numbers refer to SPEC.md, which this file implements.
 
 BEGIN {
@@ -349,7 +349,7 @@ function join(a, lo, hi, sep,   b, n, i, k) {
 # ---------- big strings ----------
 # busybox awk'\''s gsub with a regex slows down steeply on long strings with
 # many matches (3 MB, 40k matches: 0.9 s), so under busybox (SF_BB, set by
-# run.sh) gsub works on 16 KB pieces. Other awks are fastest in one pass and
+# the hook script) gsub works on 16 KB pieces. Other awks are fastest in one pass and
 # get CH so large that nothing is ever cut. (split on one character is fast
 # everywhere and needs none of this.) Pieces are cut only where no match can
 # straddle the cut:

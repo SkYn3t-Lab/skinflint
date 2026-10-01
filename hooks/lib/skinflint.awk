@@ -1,5 +1,5 @@
 # skinflint hooks in POSIX awk (mawk, gawk, BWK awk, busybox awk).
-# hooks/run.sh runs this with LC_ALL=C, so every string operation is on bytes.
+# The hook script runs this with LC_ALL=C, so every string operation is on bytes.
 # Section numbers refer to SPEC.md, which this file implements.
 
 BEGIN {
@@ -294,7 +294,7 @@ function join(a, lo, hi, sep,   b, n, i, k) {
 # ---------- big strings ----------
 # busybox awk's gsub with a regex slows down steeply on long strings with
 # many matches (3 MB, 40k matches: 0.9 s), so under busybox (SF_BB, set by
-# run.sh) gsub works on 16 KB pieces. Other awks are fastest in one pass and
+# the hook script) gsub works on 16 KB pieces. Other awks are fastest in one pass and
 # get CH so large that nothing is ever cut. (split on one character is fast
 # everywhere and needs none of this.) Pieces are cut only where no match can
 # straddle the cut:
