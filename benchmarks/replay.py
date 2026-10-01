@@ -3,7 +3,7 @@
 compressors and measure what each removes.
 
   python3 benchmarks/replay.py --out RESULT.json \
-      --arm token-miser='sh /path/to/token-miser/hooks/run.sh compress' \
+      --arm skinflint='sh /path/to/skinflint/hooks/run.sh compress' \
       --arm other='node /path/to/other/compress.js' \
       ~/.claude/projects
 
@@ -74,7 +74,7 @@ def run_session(job):
     res = {name: [0, 0, 0] for name, _ in arms}   # before, after, changed
     for name, cmd in arms:
         cfg = tempfile.mkdtemp(prefix='replay-')
-        # chisle trims only while its on-flag file exists; token-miser is on by default.
+        # chisle trims only while its on-flag file exists; skinflint is on by default.
         open(os.path.join(cfg, '.chisle-active'), 'w').write('on')
         env = dict(os.environ, CLAUDE_CONFIG_DIR=cfg, HOME=cfg)
         for p in items:

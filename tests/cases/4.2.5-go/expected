@@ -1,1 +1,1 @@
-{"hookSpecificOutput":{"hookEventName":"PostToolUse","updatedToolOutput":{"stdout":"ok  \tgithub.com/acme/project/pkg/m0\t0.00s\n[token-miser: 58 more passing lines]\nok  \tgithub.com/acme/project/pkg/m59\t0.09s\nFAIL\tpkg/bad\t0.1s","stderr":"","interrupted":false,"isImage":false}}}
+{"hookSpecificOutput":{"hookEventName":"PostToolUse","updatedToolOutput":{"stdout":"ok  \tgithub.com/acme/project/pkg/m0\t0.00s\n[skinflint: 58 more passing lines]\nok  \tgithub.com/acme/project/pkg/m59\t0.09s\nFAIL\tpkg/bad\t0.1s","stderr":"","interrupted":false,"isImage":false}}}

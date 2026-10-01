@@ -5,7 +5,7 @@
 # holding only your login, so no personal instructions, settings or other
 # plugins take part: the arm is the only difference.
 #
-#   ARMS="none:- token-miser:<dir> other:<dir> ..." \
+#   ARMS="none:- skinflint:<dir> other:<dir> ..." \
 #     bash benchmarks/run-arms.sh OUTDIR [REPS] [MODEL]
 #
 # TASKS="id id ..." limits the run to those task ids, for example to give

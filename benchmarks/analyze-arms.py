@@ -27,7 +27,7 @@ for f in glob.glob(os.path.join(rundir, '*__*__*.json')):
     if d.get('is_error'):
         continue
     cells.setdefault((t, arm), []).append(d['usage']['output_tokens'])
-arms = sorted({a for _, a in cells}, key=lambda a: (a != 'none', a != 'token-miser', a))
+arms = sorted({a for _, a in cells}, key=lambda a: (a != 'none', a != 'skinflint', a))
 base = {t: st.mean(cells[(t, 'none')]) for t in tasks if (t, 'none') in cells}
 
 def mean(t, a): return st.mean(cells[(t, a)]) if (t, a) in cells else None

@@ -17,7 +17,7 @@ record=0
 sh "$root/tools/stamp.sh" --check || exit 1
 
 # The hooks must not see settings from the environment running the tests.
-for v in $(env | sed -n 's/^\(TOKEN_MISER_[A-Za-z0-9_]*\)=.*/\1/p'); do unset "$v"; done
+for v in $(env | sed -n 's/^\(SKINFLINT_[A-Za-z0-9_]*\)=.*/\1/p'); do unset "$v"; done
 unset CLAUDE_PLUGIN_DATA
 
 state_of() { # $1 = sandbox: one line per file under cfg/, sorted bytewise
@@ -50,7 +50,7 @@ for name in $list; do
   # the output is: count it as if each occurrence were the 4 bytes of <SB>.
   n=$(printf '%s' "$out" | LC_ALL=C awk -v s="$sb" '{ while ((i = index($0, s))) { c++; $0 = substr($0, i + length(s)) } } END { print c + 0 }')
   d=$((n * ($(printf '%s' "$sb" | LC_ALL=C wc -c) - 4)))
-  st=$(state_of "$sb" | LC_ALL=C awk -v d="$d" '/^cfg\/token-miser\/stats / { sub(/saved [0-9]+/, "saved " (substr($0, index($0, "saved ") + 6) + d)) } { print }'; printf x); st=${st%x}
+  st=$(state_of "$sb" | LC_ALL=C awk -v d="$d" '/^cfg\/skinflint\/stats / { sub(/saved [0-9]+/, "saved " (substr($0, index($0, "saved ") + 6) + d)) } { print }'; printf x); st=${st%x}
   rm -rf "$sb"
   if [ $record = 1 ]; then
     printf '%s' "$got" > "$c/expected"

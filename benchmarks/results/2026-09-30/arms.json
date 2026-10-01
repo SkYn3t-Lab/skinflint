@@ -1,7 +1,7 @@
 {
  "arms": [
   "none",
-  "token-miser",
+  "skinflint",
   "caveman",
   "chisle",
   "ponytail"
@@ -15,7 +15,7 @@
    "worst_task": "debounce",
    "backfires": 0
   },
-  "token-miser": {
+  "skinflint": {
    "n": 20,
    "total_pct": 49,
    "avg_pct": 46,
@@ -58,7 +58,7 @@
     "worst_task": "debounce",
     "backfires": 0
    },
-   "token-miser": {
+   "skinflint": {
     "n": 10,
     "total_pct": 53,
     "avg_pct": 49,
@@ -100,7 +100,7 @@
     "worst_task": "backref",
     "backfires": 0
    },
-   "token-miser": {
+   "skinflint": {
     "n": 10,
     "total_pct": 47,
     "avg_pct": 44,
@@ -144,7 +144,7 @@
     "worst_task": "debounce",
     "backfires": 0
    },
-   "token-miser": {
+   "skinflint": {
     "n": 10,
     "total_pct": 39,
     "avg_pct": 41,
@@ -186,7 +186,7 @@
     "worst_task": "cache",
     "backfires": 0
    },
-   "token-miser": {
+   "skinflint": {
     "n": 10,
     "total_pct": 52,
     "avg_pct": 51,
@@ -228,7 +228,7 @@
     "worst_task": "debounce",
     "backfires": 0
    },
-   "token-miser": {
+   "skinflint": {
     "n": 5,
     "total_pct": 42,
     "avg_pct": 42,
@@ -270,7 +270,7 @@
     "worst_task": "cache",
     "backfires": 0
    },
-   "token-miser": {
+   "skinflint": {
     "n": 5,
     "total_pct": 56,
     "avg_pct": 55,
@@ -312,7 +312,7 @@
     "worst_task": "backref",
     "backfires": 0
    },
-   "token-miser": {
+   "skinflint": {
     "n": 5,
     "total_pct": 38,
     "avg_pct": 40,
@@ -354,7 +354,7 @@
     "worst_task": "restgraphql",
     "backfires": 0
    },
-   "token-miser": {
+   "skinflint": {
     "n": 5,
     "total_pct": 49,
     "avg_pct": 47,
@@ -391,7 +391,7 @@
  "per_task": {
   "debounce": {
    "none": 100,
-   "token-miser": 43,
+   "skinflint": 43,
    "caveman": 94,
    "chisle": 65,
    "ponytail": 62,
@@ -399,7 +399,7 @@
   },
   "dedupe": {
    "none": 100,
-   "token-miser": 26,
+   "skinflint": 26,
    "caveman": 49,
    "chisle": 36,
    "ponytail": 33,
@@ -407,7 +407,7 @@
   },
   "envvar": {
    "none": 100,
-   "token-miser": 46,
+   "skinflint": 46,
    "caveman": 88,
    "chisle": 67,
    "ponytail": 56,
@@ -415,7 +415,7 @@
   },
   "offbyone": {
    "none": 100,
-   "token-miser": 50,
+   "skinflint": 50,
    "caveman": 61,
    "chisle": 71,
    "ponytail": 59,
@@ -423,7 +423,7 @@
   },
   "retry": {
    "none": 100,
-   "token-miser": 45,
+   "skinflint": 45,
    "caveman": 102,
    "chisle": 52,
    "ponytail": 110,
@@ -431,7 +431,7 @@
   },
   "cache": {
    "none": 100,
-   "token-miser": 56,
+   "skinflint": 56,
    "caveman": 105,
    "chisle": 64,
    "ponytail": 57,
@@ -439,7 +439,7 @@
   },
   "migration": {
    "none": 100,
-   "token-miser": 64,
+   "skinflint": 64,
    "caveman": 87,
    "chisle": 76,
    "ponytail": 71,
@@ -447,7 +447,7 @@
   },
   "statemachine": {
    "none": 100,
-   "token-miser": 28,
+   "skinflint": 28,
    "caveman": 78,
    "chisle": 43,
    "ponytail": 48,
@@ -455,7 +455,7 @@
   },
   "csvreport": {
    "none": 100,
-   "token-miser": 62,
+   "skinflint": 62,
    "caveman": 78,
    "chisle": 69,
    "ponytail": 63,
@@ -463,7 +463,7 @@
   },
   "ratelimit": {
    "none": 100,
-   "token-miser": 68,
+   "skinflint": 68,
    "caveman": 82,
    "chisle": 69,
    "ponytail": 73,
@@ -471,7 +471,7 @@
   },
   "backref": {
    "none": 100,
-   "token-miser": 49,
+   "skinflint": 49,
    "caveman": 55,
    "chisle": 74,
    "ponytail": 89,
@@ -479,7 +479,7 @@
   },
   "pooling": {
    "none": 100,
-   "token-miser": 32,
+   "skinflint": 32,
    "caveman": 53,
    "chisle": 51,
    "ponytail": 60,
@@ -487,7 +487,7 @@
   },
   "gitrebase": {
    "none": 100,
-   "token-miser": 27,
+   "skinflint": 27,
    "caveman": 46,
    "chisle": 68,
    "ponytail": 65,
@@ -495,7 +495,7 @@
   },
   "unrelated": {
    "none": 100,
-   "token-miser": 52,
+   "skinflint": 52,
    "caveman": 79,
    "chisle": 80,
    "ponytail": 72,
@@ -503,7 +503,7 @@
   },
   "deadlock": {
    "none": 100,
-   "token-miser": 41,
+   "skinflint": 41,
    "caveman": 57,
    "chisle": 55,
    "ponytail": 66,
@@ -511,7 +511,7 @@
   },
   "restgraphql": {
    "none": 100,
-   "token-miser": 30,
+   "skinflint": 30,
    "caveman": 55,
    "chisle": 31,
    "ponytail": 62,
@@ -519,7 +519,7 @@
   },
   "postmortem": {
    "none": 100,
-   "token-miser": 64,
+   "skinflint": 64,
    "caveman": 80,
    "chisle": 65,
    "ponytail": 86,
@@ -527,7 +527,7 @@
   },
   "monolith": {
    "none": 100,
-   "token-miser": 50,
+   "skinflint": 50,
    "caveman": 78,
    "chisle": 61,
    "ponytail": 84,
@@ -535,7 +535,7 @@
   },
   "apidesign": {
    "none": 100,
-   "token-miser": 45,
+   "skinflint": 45,
    "caveman": 69,
    "chisle": 69,
    "ponytail": 53,
@@ -543,7 +543,7 @@
   },
   "rerender": {
    "none": 100,
-   "token-miser": 47,
+   "skinflint": 47,
    "caveman": 57,
    "chisle": 70,
    "ponytail": 63,
@@ -552,7 +552,7 @@
  },
  "correct": {
   "none": "54/56",
-  "token-miser": "54/56",
+  "skinflint": "54/56",
   "caveman": "55/56",
   "chisle": "54/56",
   "ponytail": "55/56"

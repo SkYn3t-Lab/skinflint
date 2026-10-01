@@ -1,4 +1,4 @@
-# token-miser hooks in POSIX awk (mawk, gawk, BWK awk, busybox awk).
+# skinflint hooks in POSIX awk (mawk, gawk, BWK awk, busybox awk).
 # hooks/run.sh runs this with LC_ALL=C, so every string operation is on bytes.
 # Section numbers refer to SPEC.md, which this file implements.
 
@@ -12,7 +12,7 @@ BEGIN {
   if (!ROOT || JT[ROOT] != "o") exit 0
   load_config()
   load_session()
-  HOOK = ENVIRON["TM_HOOK"]
+  HOOK = ENVIRON["SF_HOOK"]
   if (HOOK == "activate") exit hook_activate()
   if (HOOK == "prompt") exit hook_prompt()
   if (HOOK == "subagent") exit hook_subagent()
@@ -23,14 +23,14 @@ BEGIN {
 function init(   i) {
   for (i = 1; i < 256; i++) ORD[sprintf("%c", i)] = i
   HEX = "0123456789abcdef"
-  CH = ENVIRON["TM_BB"] == "1" ? 16384 : 2147483647
-  UP = "TOKEN-MISER"
-  STATE = ENVIRON["TM_STATE"]
+  CH = ENVIRON["SF_BB"] == "1" ? 16384 : 2147483647
+  UP = "SKINFLINT"
+  STATE = ENVIRON["SF_STATE"]
   SESS = STATE "/sessions"; SPILL = STATE "/spill"
-  CLAUDE_DIR = ENVIRON["TM_CLAUDE_DIR"]
-  PLUGIN = ENVIRON["TM_ROOT"]
-  CAN_WRITE = ENVIRON["TM_W"] == "1"
-  CAN_SPILL = ENVIRON["TM_WS"] == "1"
+  CLAUDE_DIR = ENVIRON["SF_CLAUDE_DIR"]
+  PLUGIN = ENVIRON["SF_ROOT"]
+  CAN_WRITE = ENVIRON["SF_W"] == "1"
+  CAN_SPILL = ENVIRON["SF_WS"] == "1"
   CHECK = "\342\234\223"
   WSP = "[ \t\n\r\013\014]"
   # Intervals are spelled out: older mawk has no {n}.
@@ -293,7 +293,7 @@ function join(a, lo, hi, sep,   b, n, i, k) {
 
 # ---------- big strings ----------
 # busybox awk's gsub with a regex slows down steeply on long strings with
-# many matches (3 MB, 40k matches: 0.9 s), so under busybox (TM_BB, set by
+# many matches (3 MB, 40k matches: 0.9 s), so under busybox (SF_BB, set by
 # run.sh) gsub works on 16 KB pieces. Other awks are fastest in one pass and
 # get CH so large that nothing is ever cut. (split on one character is fast
 # everywhere and needs none of this.) Pieces are cut only where no match can
@@ -403,7 +403,7 @@ function tail_bytes(s, n,   st) {
 function cut300(l) { return length(l) > 300 ? head_bytes(l, 300) "..." : l }
 
 function num(k, fb,   v) {
-  v = ENVIRON["TOKEN_MISER_" k]
+  v = ENVIRON["SKINFLINT_" k]
   if (v !~ /^[0-9]+$/ || length(v) > 9 || v + 0 <= 0) return fb
   return v + 0
 }
@@ -414,12 +414,12 @@ function ctx(event, text) {
 
 # ---------- config, mode, sections (2, 3) ----------
 
-# The user config, then the project's .claude/token-miser.json: a valid key
+# The user config, then the project's .claude/skinflint.json: a valid key
 # in the project file replaces the user's value for that key.
 function load_config() {
   CFG_MODE = ""; CFG_PROSE = ""; CFG_CODE = ""
-  config_file(ENVIRON["TM_CFG"])
-  config_file(ENVIRON["TM_PC"])
+  config_file(ENVIRON["SF_CFG"])
+  config_file(ENVIRON["SF_PC"])
 }
 
 function config_file(path,   raw, id, v, s, m) {
@@ -438,7 +438,7 @@ function config_file(path,   raw, id, v, s, m) {
 }
 
 function default_mode(   e) {
-  e = tolower(ENVIRON["TOKEN_MISER_DEFAULT_MODE"])
+  e = tolower(ENVIRON["SKINFLINT_DEFAULT_MODE"])
   if (e == "on" || e == "off") return e
   if (CFG_MODE != "") return CFG_MODE
   return "on"
@@ -459,7 +459,7 @@ function sections(   i, p, raw, id, v, st) {
   if (CFG_CODE != "") CODE = CFG_CODE
   if (CFG_PROSE != "") return
   for (i = 1; i <= 3; i++) {
-    p = ENVIRON["TM_S" i]
+    p = ENVIRON["SF_S" i]
     if (p == "") continue
     raw = no_bom(readfile(p))
     if (!index(raw, "\"outputStyle\"") || !valid_utf8(raw)) continue
@@ -488,11 +488,11 @@ function hook_activate(   src, body) {
   src = jstr(ROOT, "source")
   if (MODE == "off") return src == "startup" ? 4 : 0
   if (src == "resume" || src == "fork") {
-    printf "%s", ctx("SessionStart", UP " ON (resumed). The rules are already in this conversation; the token-miser skill has them if not.")
+    printf "%s", ctx("SessionStart", UP " ON (resumed). The rules are already in this conversation; the skinflint skill has them if not.")
     return 0
   }
   sections()
-  body = ruleset(readfile(PLUGIN "/skills/token-miser/SKILL.md"))
+  body = ruleset(readfile(PLUGIN "/skills/skinflint/SKILL.md"))
   printf "%s", ctx("SessionStart", UP " ON\n\n" body)
   return src == "startup" ? 4 : 0
 }
@@ -520,11 +520,11 @@ function ruleset(s,   lines, n, i, k, out, skip, start) {
 function hook_prompt(   c, want) {
   c = command_form(jstr(ROOT, "prompt"))
   want = ""
-  if (c == "stop token-miser" || c == "token-miser off" || c == "token-miser mode off" || c == "/token-miser off" || \
-      c == "disable token-miser" || c == "turn off token-miser" || c == "deactivate token-miser" || c == "normal mode") want = "off"
-  else if (c == "/token-miser" || c == "/token-miser on" || c == "token-miser on" || c == "token-miser mode" || \
-      c == "token-miser mode on" || c == "start token-miser" || c == "enable token-miser" || c == "turn on token-miser" || \
-      c == "activate token-miser" || c == "use token-miser") want = "on"
+  if (c == "stop skinflint" || c == "skinflint off" || c == "skinflint mode off" || c == "/skinflint off" || \
+      c == "disable skinflint" || c == "turn off skinflint" || c == "deactivate skinflint" || c == "normal mode") want = "off"
+  else if (c == "/skinflint" || c == "/skinflint on" || c == "skinflint on" || c == "skinflint mode" || \
+      c == "skinflint mode on" || c == "start skinflint" || c == "enable skinflint" || c == "turn on skinflint" || \
+      c == "activate skinflint" || c == "use skinflint") want = "on"
   if (want != "") {
     if (SID != "" && CAN_WRITE) writefile(SESS "/" SID ".mode", want)
     MODE = want
@@ -541,8 +541,8 @@ function command_form(p,   a, z) {
   z = substr(p, length(p), 1)
   if (z == "." || z == "!") p = trim(substr(p, 1, length(p) - 1))
   gsub(/[ \t\n\r\013\014]+/, " ", p)
-  if (index(p, "token miser")) p = swap(p, "token miser", "token-miser")
-  if (index(p, "tokenmiser")) p = swap(p, "tokenmiser", "token-miser")
+  if (index(p, "skin flint")) p = swap(p, "skin flint", "skinflint")
+  if (index(p, "skin-flint")) p = swap(p, "skin-flint", "skinflint")
   return p
 }
 
@@ -556,7 +556,7 @@ function hook_subagent() {
 # ---------- PostToolUse (4) ----------
 
 function hook_compress(   tool, resp, ti, i, v, k, unit, total, saved, dup, rc, nuls) {
-  if (MODE != "on" || ENVIRON["TOKEN_MISER_COMPRESS"] == "0") return 0
+  if (MODE != "on" || ENVIRON["SKINFLINT_COMPRESS"] == "0") return 0
   tool = jstr(ROOT, "tool_name")
   if (!tool_ok(tool)) return 0
   resp = json_get(ROOT, "tool_response")
@@ -566,7 +566,7 @@ function hook_compress(   tool, resp, ti, i, v, k, unit, total, saved, dup, rc, 
   if (ti && JT[ti] == "o")
     for (i = 1; i <= JN[ti]; i++) {
       v = JC[ti, i]
-      if (JT[v] == "s" && (index(JV[v], "token-miser/spill") || index(JV[v], "token-miser\\spill"))) return 0
+      if (JT[v] == "s" && (index(JV[v], "skinflint/spill") || index(JV[v], "skinflint\\spill"))) return 0
     }
   NS = 0
   if (!find_slots(resp)) return 0
@@ -600,7 +600,7 @@ function hook_compress(   tool, resp, ti, i, v, k, unit, total, saved, dup, rc, 
 
 function tool_ok(t,   list, n, parts, i) {
   if (t == "" || t == "Read" || t == "Edit" || t == "Write" || t == "MultiEdit" || t == "NotebookEdit" || t == "NotebookRead") return 0
-  list = ENVIRON["TOKEN_MISER_TOOLS"]
+  list = ENVIRON["SKINFLINT_TOOLS"]
   if (list != "") {
     n = split(list, parts, ",")
     for (i = 1; i <= n; i++) if (trim(parts[i]) == t) return 1
@@ -679,7 +679,7 @@ function is_view(cmd,   w, rest) {
 # ---------- dedup (4.5) ----------
 
 function dedup(unit,   p, raw, nl, prevId, n, lines, i, k, out) {
-  if (ENVIRON["TOKEN_MISER_DEDUP"] == "0" || SID == "" || TUID == "") return 0
+  if (ENVIRON["SKINFLINT_DEDUP"] == "0" || SID == "" || TUID == "") return 0
   if (length(unit) < 2048 || length(unit) > 1048576) return 0
   p = SESS "/" SID "." SAFE_TOOL ".last"
   raw = readfile(p)
@@ -691,7 +691,7 @@ function dedup(unit,   p, raw, nl, prevId, n, lines, i, k, out) {
   n = lines_of(unit, lines)
   k = (n < 5 ? n : 5)
   for (i = 1; i <= k; i++) out[i] = cut300(lines[i])
-  NEW[1] = "[token-miser: same output as the previous " TOOL " call (" length(unit) " bytes, " n " lines). It starts:]\n" join(out, 1, k, "\n")
+  NEW[1] = "[skinflint: same output as the previous " TOOL " call (" length(unit) " bytes, " n " lines). It starts:]\n" join(out, 1, k, "\n")
   for (i = 2; i <= NS; i++) NEW[i] = ""
   return 1
 }
@@ -756,7 +756,7 @@ function repeats(n,   i, j, k, r, cur) {
     cur = LN[i]
     for (j = i + 1; j <= n && LN[j] == cur; j++) ;
     r = j - i
-    if (r >= 3 && cur != "") { LN[++k] = cur; LN[++k] = "[token-miser: line above repeated " (r - 1) " more times]"; RCHANGED = 1 }
+    if (r >= 3 && cur != "") { LN[++k] = cur; LN[++k] = "[skinflint: line above repeated " (r - 1) " more times]"; RCHANGED = 1 }
     else while (i < j) LN[++k] = LN[i++]
   }
   return k
@@ -771,7 +771,7 @@ function stamps(t,   n, L, K, i, j, k, out, r) {
     if (K[i] == "") { out[++k] = L[i]; j = i + 1; continue }
     for (j = i + 1; j <= n && K[j] == K[i]; j++) ;
     r = j - i
-    if (r >= 3) { out[++k] = L[i]; out[++k] = "[token-miser: " (r - 2) " more lines like this, differing only in timestamp]"; out[++k] = L[j - 1] }
+    if (r >= 3) { out[++k] = L[i]; out[++k] = "[skinflint: " (r - 2) " more lines like this, differing only in timestamp]"; out[++k] = L[j - 1] }
     else while (i < j) out[++k] = L[i++]
   }
   return join(out, 1, k, "\n")
@@ -797,7 +797,7 @@ function frames(t,   n, L, UK, i, u, US, UE, k, out, a, j, x) {
     for (j = i; j <= n && UK[j] > 0; j += UK[j]) { u++; US[u] = j; UE[u] = j + UK[j] - 1 }
     if (u >= 8) {
       for (a = 1; a <= 3; a++) for (x = US[a]; x <= UE[a]; x++) out[++k] = L[x]
-      out[++k] = "[token-miser: " (u - 5) " stack frames omitted]"
+      out[++k] = "[skinflint: " (u - 5) " stack frames omitted]"
       for (a = u - 1; a <= u; a++) for (x = US[a]; x <= UE[a]; x++) out[++k] = L[x]
     } else for (x = i; x < j; x++) out[++k] = L[x]
     i = j
@@ -825,7 +825,7 @@ function passes(t,   n, L, i, j, k, out, r) {
     if (!is_pass(L[i])) { out[++k] = L[i]; j = i + 1; continue }
     for (j = i + 1; j <= n && is_pass(L[j]); j++) ;
     r = j - i
-    if (r >= 10) { out[++k] = L[i]; out[++k] = "[token-miser: " (r - 2) " more passing lines]"; out[++k] = L[j - 1] }
+    if (r >= 10) { out[++k] = L[i]; out[++k] = "[skinflint: " (r - 2) " more passing lines]"; out[++k] = L[j - 1] }
     else while (i < j) out[++k] = L[i++]
   }
   return join(out, 1, k, "\n")
@@ -836,7 +836,7 @@ function longlines(t,   n, L, i, h, z, hit) {
   hit = 0
   for (i = 1; i <= n; i++) if (length(L[i]) > 4096) {
     h = head_bytes(L[i], 2048); z = tail_bytes(L[i], 512)
-    L[i] = h " [token-miser: " (length(L[i]) - length(h) - length(z)) " bytes cut from this line] " z
+    L[i] = h " [skinflint: " (length(L[i]) - length(h) - length(z)) " bytes cut from this line] " z
     hit = 1
   }
   return hit ? join(L, 1, n, "\n") : t
@@ -851,7 +851,7 @@ function cut_lines(t, orig, slot, n,   saved, a, b, head, tail, rescue) {
   head = join(LN, 1, HEAD, "\n"); tail = join(LN, b + 1, n, "\n")
   if (!VIEW) { head = finer(head); tail = finer(tail) }
   rescue = rescue_lines(t, a, b, n)
-  return head "\n[token-miser: cut lines " a "-" b " of " n RESCUE "." saved "]" (rescue == "" ? "" : "\n" rescue) "\n" tail
+  return head "\n[skinflint: cut lines " a "-" b " of " n RESCUE "." saved "]" (rescue == "" ? "" : "\n" rescue) "\n" tail
 }
 
 # First 12 error lines of LN[a..b] with one line of context each. Sets
@@ -896,11 +896,11 @@ function cut_bytes(t, orig, slot,   saved, x, h, z) {
   saved = spill(orig, slot)
   x = int(MAX / 2)
   h = head_bytes(t, x); z = tail_bytes(t, x)
-  return h "\n[token-miser: cut " (length(t) - length(h) - length(z)) " bytes from the middle." saved "]\n" z
+  return h "\n[skinflint: cut " (length(t) - length(h) - length(z)) " bytes from the middle." saved "]\n" z
 }
 
 function spill(orig, slot,   p, lo) {
-  if (ENVIRON["TOKEN_MISER_SPILL"] == "0" || TUID == "") return ""
+  if (ENVIRON["SKINFLINT_SPILL"] == "0" || TUID == "") return ""
   lo = tolower(orig)
   if (orig ~ SECRET1 || lo ~ SECRET2) return " Full text not saved: it looks like it holds a credential"
   if (!CAN_SPILL) return ""
@@ -916,7 +916,7 @@ function add_stats(saved,   p, raw, s, e) {
   if (!CAN_WRITE) return
   p = STATE "/stats"
   s = 0; e = 0
-  if (ENVIRON["TM_STATS"] == "1") {
+  if (ENVIRON["SF_STATS"] == "1") {
     raw = readfile(p)
     if (raw !~ /^saved [0-9]+\nevents [0-9]+\n$/) return
     s = raw; sub(/^saved /, "", s); sub(/\n.*/, "", s)

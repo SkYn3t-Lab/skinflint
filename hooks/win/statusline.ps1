@@ -1,10 +1,10 @@
-# Status line (Windows): token-miser's mode for this session and the output it has saved.
+# Status line (Windows): skinflint's mode for this session and the output it has saved.
 # Prints only fixed text and digits read from our own state files.
 $ErrorActionPreference = 'SilentlyContinue'
 $in = [Console]::In.ReadToEnd()
 $base = $env:CLAUDE_CONFIG_DIR
 if (-not $base) { $base = Join-Path $env:USERPROFILE '.claude' }
-$dir = Join-Path $base 'token-miser'
+$dir = Join-Path $base 'skinflint'
 
 $mode = ''
 $m = [regex]::Match($in, '"session_id"\s*:\s*"([A-Za-z0-9_-]{1,128})"')
@@ -14,7 +14,7 @@ if ($m.Success) {
 }
 if ($mode -ne 'on' -and $mode -ne 'off') {
   $mode = 'on'
-  if ("$env:TOKEN_MISER_DEFAULT_MODE".ToLowerInvariant() -eq 'off') { $mode = 'off' }
+  if ("$env:SKINFLINT_DEFAULT_MODE".ToLowerInvariant() -eq 'off') { $mode = 'off' }
 }
 
 $extra = ''
@@ -31,5 +31,5 @@ if ([IO.File]::Exists($s)) {
 }
 
 $e = [char]27
-if ($mode -eq 'on') { [Console]::Out.Write("$e[38;5;172m[TOKEN-MISER]$e[0m$extra") }
-else { [Console]::Out.Write("$e[2m[token-miser off]$e[0m$extra") }
+if ($mode -eq 'on') { [Console]::Out.Write("$e[38;5;172m[SKINFLINT]$e[0m$extra") }
+else { [Console]::Out.Write("$e[2m[skinflint off]$e[0m$extra") }

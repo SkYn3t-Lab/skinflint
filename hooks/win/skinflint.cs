@@ -1,6 +1,6 @@
-// token-miser hooks for Windows, compiled on first use by the csc.exe that
+// skinflint hooks for Windows, compiled on first use by the csc.exe that
 // ships with the .NET Framework. Implements SPEC.md, the same contract as
-// hooks/lib/tm.awk, and must produce the same bytes.
+// hooks/lib/skinflint.awk, and must produce the same bytes.
 //
 // Text is held as "byte strings": UTF-8 input decoded as Latin-1, so one char
 // is one byte. Lengths, cuts and regexes then work on bytes exactly as the awk
@@ -12,7 +12,7 @@ using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace TokenMiser {
+namespace Skinflint {
 
 class Node {
   public char T;                       // o a s n t f z
@@ -27,7 +27,7 @@ public static class Hook {
   // Byte strings by hand: looking up the Latin-1 Encoding costs startup time.
   static string L1(byte[] b) { char[] c = new char[b.Length]; for (int i = 0; i < b.Length; i++) c[i] = (char)b[i]; return new string(c); }
   static byte[] L1(string s) { byte[] b = new byte[s.Length]; for (int i = 0; i < s.Length; i++) b[i] = (byte)s[i]; return b; }
-  const string UP = "TOKEN-MISER";
+  const string UP = "SKINFLINT";
   const string CHECK = "\xE2\x9C\x93";
   // Regexes are built on first use: a hook needs only a few of them, and
   // building all of them up front costs milliseconds on every call.
@@ -54,7 +54,7 @@ public static class Hook {
         so.Flush();
       }
     } catch (Exception e) {
-      if (Env("TOKEN_MISER_DEBUG") == "1") Console.Error.WriteLine(e);
+      if (Env("SKINFLINT_DEBUG") == "1") Console.Error.WriteLine(e);
     }
     return 0;
   }
@@ -98,7 +98,7 @@ public static class Hook {
     string d = Env("CLAUDE_CONFIG_DIR");
     if (d == "") d = Env("USERPROFILE") + "/.claude";
     ClaudeDir = Strip(d);
-    State = ClaudeDir + "/token-miser";
+    State = ClaudeDir + "/skinflint";
     Sess = State + "/sessions"; SpillDir = State + "/spill";
     Plugin = Strip(Env("CLAUDE_PLUGIN_ROOT"));
     try { Directory.CreateDirectory(Sess); Directory.CreateDirectory(SpillDir); } catch { }
@@ -344,7 +344,7 @@ public static class Hook {
   static string Cut300(string l) { return l.Length > 300 ? HeadBytes(l, 300) + "..." : l; }
 
   static int Num(string k, int fb) {
-    string v = Env("TOKEN_MISER_" + k);
+    string v = Env("SKINFLINT_" + k);
     if (v.Length == 0 || v.Length > 9) return fb;
     foreach (char c in v) if (c < '0' || c > '9') return fb;
     int n = int.Parse(v);
@@ -361,12 +361,12 @@ public static class Hook {
 
   // ---------- config, mode, sections (2, 3) ----------
 
-  // The user config, then the project's .claude/token-miser.json: a valid key
+  // The user config, then the project's .claude/skinflint.json: a valid key
   // in the project file replaces the user's value for that key.
   static void LoadConfig() {
     string dir = Env("XDG_CONFIG_HOME");
-    ConfigFile((dir != "" ? Strip(dir) : Slash(Env("APPDATA"))) + "/token-miser/config.json");
-    ConfigFile(".claude/token-miser.json");
+    ConfigFile((dir != "" ? Strip(dir) : Slash(Env("APPDATA"))) + "/skinflint/config.json");
+    ConfigFile(".claude/skinflint.json");
   }
 
   static void ConfigFile(string p) {
@@ -386,7 +386,7 @@ public static class Hook {
   }
 
   static string DefaultMode() {
-    string e = Lower(Env("TOKEN_MISER_DEFAULT_MODE"));
+    string e = Lower(Env("SKINFLINT_DEFAULT_MODE"));
     if (e == "on" || e == "off") return e;
     return CfgMode != "" ? CfgMode : "on";
   }
@@ -438,9 +438,9 @@ public static class Hook {
     if (src == "startup") PruneSessions();
     if (Mode == "off") return "";
     if (src == "resume" || src == "fork")
-      return Ctx("SessionStart", UP + " ON (resumed). The rules are already in this conversation; the token-miser skill has them if not.");
+      return Ctx("SessionStart", UP + " ON (resumed). The rules are already in this conversation; the skinflint skill has them if not.");
     Sections();
-    string body = Ruleset(ReadFile(Plugin + "/skills/token-miser/SKILL.md") ?? "");
+    string body = Ruleset(ReadFile(Plugin + "/skills/skinflint/SKILL.md") ?? "");
     return Ctx("SessionStart", UP + " ON\n\n" + body);
   }
 
@@ -475,10 +475,10 @@ public static class Hook {
 
   // ---------- UserPromptSubmit (5.2) ----------
 
-  static readonly string[] OffForms = { "stop token-miser", "token-miser off", "token-miser mode off", "/token-miser off",
-    "disable token-miser", "turn off token-miser", "deactivate token-miser", "normal mode" };
-  static readonly string[] OnForms = { "/token-miser", "/token-miser on", "token-miser on", "token-miser mode",
-    "token-miser mode on", "start token-miser", "enable token-miser", "turn on token-miser", "activate token-miser", "use token-miser" };
+  static readonly string[] OffForms = { "stop skinflint", "skinflint off", "skinflint mode off", "/skinflint off",
+    "disable skinflint", "turn off skinflint", "deactivate skinflint", "normal mode" };
+  static readonly string[] OnForms = { "/skinflint", "/skinflint on", "skinflint on", "skinflint mode",
+    "skinflint mode on", "start skinflint", "enable skinflint", "turn on skinflint", "activate skinflint", "use skinflint" };
 
   static string Prompt() {
     string c = CommandForm(JStr(Root, "prompt"));
@@ -503,7 +503,7 @@ public static class Hook {
       while (i + 1 < p.Length && IsWs(p[i + 1])) i++;
     }
     p = sb.ToString();
-    return p.Replace("token miser", "token-miser").Replace("tokenmiser", "token-miser");
+    return p.Replace("skin flint", "skinflint").Replace("skin-flint", "skinflint");
   }
 
   // ---------- SubagentStart (5.3) ----------
@@ -515,7 +515,7 @@ public static class Hook {
   // ---------- PostToolUse (4) ----------
 
   static string Compress() {
-    if (Mode != "on" || Env("TOKEN_MISER_COMPRESS") == "0") return "";
+    if (Mode != "on" || Env("SKINFLINT_COMPRESS") == "0") return "";
     string tool = JStr(Root, "tool_name");
     if (!ToolOk(tool)) return "";
     Node resp = Get(Root, "tool_response");
@@ -524,7 +524,7 @@ public static class Hook {
     Node ti = Get(Root, "tool_input");
     if (ti != null && ti.T == 'o')
       foreach (Node v in ti.C)
-        if (v.T == 's' && (v.V.IndexOf("token-miser/spill", StringComparison.Ordinal) >= 0 || v.V.IndexOf("token-miser\\spill", StringComparison.Ordinal) >= 0)) return "";
+        if (v.T == 's' && (v.V.IndexOf("skinflint/spill", StringComparison.Ordinal) >= 0 || v.V.IndexOf("skinflint\\spill", StringComparison.Ordinal) >= 0)) return "";
     if (!FindSlots(resp) || Slot.Count == 0) return "";
     NS = Slot.Count;
 
@@ -558,7 +558,7 @@ public static class Hook {
 
   static bool ToolOk(string t) {
     if (t == "" || t == "Read" || t == "Edit" || t == "Write" || t == "MultiEdit" || t == "NotebookEdit" || t == "NotebookRead") return false;
-    string list = Env("TOKEN_MISER_TOOLS");
+    string list = Env("SKINFLINT_TOOLS");
     if (list != "") {
       foreach (string x in list.Split(',')) if (Trim(x) == t) return true;
       return false;
@@ -639,7 +639,7 @@ public static class Hook {
   // ---------- dedup (4.5) ----------
 
   static bool Dedup(string unit, string[] nw) {
-    if (Env("TOKEN_MISER_DEDUP") == "0" || Sid == "" || Tuid == "") return false;
+    if (Env("SKINFLINT_DEDUP") == "0" || Sid == "" || Tuid == "") return false;
     if (unit.Length < 2048 || unit.Length > 1048576) return false;
     string p = Sess + "/" + Sid + "." + SafeTool + ".last";
     string raw = ReadFile(p) ?? "";
@@ -651,7 +651,7 @@ public static class Hook {
     int k = Math.Min(L.Length, 5);
     string[] first = new string[k];
     for (int i = 0; i < k; i++) first[i] = Cut300(L[i]);
-    nw[0] = "[token-miser: same output as the previous " + Tool + " call (" + unit.Length + " bytes, " + L.Length + " lines). It starts:]\n" + string.Join("\n", first);
+    nw[0] = "[skinflint: same output as the previous " + Tool + " call (" + unit.Length + " bytes, " + L.Length + " lines). It starts:]\n" + string.Join("\n", first);
     for (int i = 1; i < nw.Length; i++) nw[i] = "";
     return true;
   }
@@ -717,7 +717,7 @@ public static class Hook {
       string cur = LN[i];
       for (j = i + 1; j < n && LN[j] == cur; j++) { }
       int r = j - i;
-      if (r >= 3 && cur != "") { LN[k++] = cur; LN[k++] = "[token-miser: line above repeated " + (r - 1) + " more times]"; RChanged = true; }
+      if (r >= 3 && cur != "") { LN[k++] = cur; LN[k++] = "[skinflint: line above repeated " + (r - 1) + " more times]"; RChanged = true; }
       else while (i < j) LN[k++] = LN[i++];
     }
     return k;
@@ -747,7 +747,7 @@ public static class Hook {
       if (K[i] == "") { o.Add(L[i]); j = i + 1; continue; }
       for (j = i + 1; j < n && K[j] == K[i]; j++) { }
       int r = j - i;
-      if (r >= 3) { o.Add(L[i]); o.Add("[token-miser: " + (r - 2) + " more lines like this, differing only in timestamp]"); o.Add(L[j - 1]); }
+      if (r >= 3) { o.Add(L[i]); o.Add("[skinflint: " + (r - 2) + " more lines like this, differing only in timestamp]"); o.Add(L[j - 1]); }
       else for (int x = i; x < j; x++) o.Add(L[x]);
     }
     return string.Join("\n", o.ToArray());
@@ -779,7 +779,7 @@ public static class Hook {
       int u = us.Count;
       if (u >= 8) {
         for (int a = 0; a < 3; a++) for (int x = us[a]; x <= ue[a]; x++) o.Add(L[x]);
-        o.Add("[token-miser: " + (u - 5) + " stack frames omitted]");
+        o.Add("[skinflint: " + (u - 5) + " stack frames omitted]");
         for (int a = u - 2; a < u; a++) for (int x = us[a]; x <= ue[a]; x++) o.Add(L[x]);
       } else for (int x = i; x < j; x++) o.Add(L[x]);
       i = j;
@@ -811,7 +811,7 @@ public static class Hook {
       if (!IsPass(L[i])) { o.Add(L[i]); j = i + 1; continue; }
       for (j = i + 1; j < n && IsPass(L[j]); j++) { }
       int r = j - i;
-      if (r >= 10) { o.Add(L[i]); o.Add("[token-miser: " + (r - 2) + " more passing lines]"); o.Add(L[j - 1]); }
+      if (r >= 10) { o.Add(L[i]); o.Add("[skinflint: " + (r - 2) + " more passing lines]"); o.Add(L[j - 1]); }
       else for (int x = i; x < j; x++) o.Add(L[x]);
     }
     return string.Join("\n", o.ToArray());
@@ -822,7 +822,7 @@ public static class Hook {
     bool hit = false;
     for (int i = 0; i < L.Length; i++) if (L[i].Length > 4096) {
       string h = HeadBytes(L[i], 2048), z = TailBytes(L[i], 512);
-      L[i] = h + " [token-miser: " + (L[i].Length - h.Length - z.Length) + " bytes cut from this line] " + z;
+      L[i] = h + " [skinflint: " + (L[i].Length - h.Length - z.Length) + " bytes cut from this line] " + z;
       hit = true;
     }
     return hit ? string.Join("\n", L) : t;
@@ -836,7 +836,7 @@ public static class Hook {
     string head = string.Join("\n", LN, 0, Head), tail = string.Join("\n", LN, b, n - b);
     if (!View) { head = Finer(head); tail = Finer(tail); }
     string rescue = RescueLines(a, b);
-    return head + "\n[token-miser: cut lines " + a + "-" + b + " of " + n + Rescue + "." + saved + "]" + (rescue == "" ? "" : "\n" + rescue) + "\n" + tail;
+    return head + "\n[skinflint: cut lines " + a + "-" + b + " of " + n + Rescue + "." + saved + "]" + (rescue == "" ? "" : "\n" + rescue) + "\n" + tail;
   }
 
   // a and b are 1-based line numbers, as in the spec; LN is 0-based.
@@ -872,14 +872,14 @@ public static class Hook {
     string saved = Spill(orig, slot);
     int x = Max / 2;
     string h = HeadBytes(t, x), z = TailBytes(t, x);
-    return h + "\n[token-miser: cut " + (t.Length - h.Length - z.Length) + " bytes from the middle." + saved + "]\n" + z;
+    return h + "\n[skinflint: cut " + (t.Length - h.Length - z.Length) + " bytes from the middle." + saved + "]\n" + z;
   }
 
   static Regex _Secret1; static Regex Secret1 { get { return _Secret1 ?? (_Secret1 = new Regex(@"-----BEGIN [A-Z ]*PRIVATE KEY-----|AKIA[0-9A-Z]{16}|gh[pousr]_[A-Za-z0-9]{36}|github_pat_[A-Za-z0-9_]{22}|xox[abprs]-[A-Za-z0-9-]{10}|sk-[A-Za-z0-9_-]{20}", O)); } }
   static Regex _Secret2; static Regex Secret2 { get { return _Secret2 ?? (_Secret2 = new Regex(@"(password|passwd|secret|token|api[_-]?key)[""']?[ \t]*[:=][ \t]*[""']?[^ \t""']{8}|authorization:[ \t]*bearer[ \t]+[^ \t]{16}", O)); } }
 
   static string Spill(string orig, int slot) {
-    if (Env("TOKEN_MISER_SPILL") == "0" || Tuid == "") return "";
+    if (Env("SKINFLINT_SPILL") == "0" || Tuid == "") return "";
     if (Secret1.IsMatch(orig) || Secret2.IsMatch(Lower(orig))) return " Full text not saved: it looks like it holds a credential";
     if (!CanSpill) return "";
     string p = SpillDir + "/" + SafeTool + "-" + Tuid + "-" + slot + ".txt";

@@ -1,8 +1,8 @@
 <p align="center">
-  <img src="assets/logo.png" alt="token-miser" width="200">
+  <img src="assets/logo.png" alt="skinflint" width="200">
 </p>
 
-<h1 align="center">token-miser</h1>
+<h1 align="center">skinflint</h1>
 
 <p align="center">
   <b>Make Claude Code say more with fewer tokens.</b><br>
@@ -19,7 +19,7 @@
 ---
 
 Every token Claude writes, and every line of tool output it reads, is paid for
-again on each later turn. token-miser cuts the ones that carry nothing and
+again on each later turn. skinflint cuts the ones that carry nothing and
 keeps every one that carries a fact.
 
 <p align="center"><b>51% fewer output tokens than no plugin, the fewest of four plugins tested &middot; 4.2% of tool output trimmed before Claude reads it &middot; about $87 a month saved on one developer's real usage &middot; zero dependencies</b></p>
@@ -35,12 +35,12 @@ keeps every one that carries a fact.
   Windows a small program built on first use with the compiler that ships
   with Windows. No Node, no Python, no package manager.
 - **Faster than every other plugin measured.** On every hook, on Linux and on
-  Windows from Git Bash, PowerShell 5.1 and PowerShell 7, token-miser's hooks
+  Windows from Git Bash, PowerShell 5.1 and PowerShell 7, skinflint's hooks
   finish first (see [Faster hooks](#faster-hooks)).
 - **Tested to the byte.** One written [specification](SPEC.md), two
   implementations, 176 test cases that must produce identical bytes on both.
 
-Same model, same question, one difference: token-miser. Both answers are
+Same model, same question, one difference: skinflint. Both answers are
 verbatim from the [benchmark run](benchmarks/results/2026-09-30/cells.jsonl),
 except that headings are shown in bold so they do not become sections of this
 page:
@@ -49,7 +49,7 @@ page:
 
 <table>
 <tr><th align="left" width="50%">No plugin: 670 output tokens</th>
-<th align="left" width="50%">token-miser: 182 output tokens</th></tr>
+<th align="left" width="50%">skinflint: 182 output tokens</th></tr>
 <tr valign="top"><td>
 
 Both commands integrate changes from one branch into another. They differ in how they record that in history.
@@ -91,7 +91,7 @@ Use merge for shared or public branches. Use rebase to tidy up local, unpushed w
 
 ## What it trims
 
-| | The waste | What token-miser does |
+| | The waste | What skinflint does |
 |---|---|---|
 | **Prose** | Preambles, recaps, hedging, headings and bullet walls nobody asked for | A short ruleset at session start, and a one-line reminder with every prompt |
 | **Code** | Abstractions with one user, boilerplate "for later", new dependencies for a few lines | A decision ladder: reuse, standard library, platform, installed dependency, then the least new code |
@@ -103,7 +103,7 @@ flowchart LR
     U(["Every prompt"]) -->|one-line reminder| M
     A(["Every subagent"]) -->|same rules| M
     M -->|runs a tool| T[["Bash, PowerShell, Grep, Glob,<br/>web, MCP, subagents"]]
-    T -->|raw output| C["token-miser:<br/>clean, fold, cut, save"]
+    T -->|raw output| C["skinflint:<br/>clean, fold, cut, save"]
     C -->|same shape, far smaller| M
     R["Read / Edit / Write"] -.->|never touched| M
     style M fill:#0B0F14,stroke:#1FE0C4,color:#e6edf3
@@ -133,15 +133,15 @@ off on every turn after.
 - **No narration between tool calls.** No "now I will..." before each command
   and no summary of a result it is about to act on.
 - **Shortcuts you can find again.** A corner deliberately cut in the code gets
-  a `token-miser:` comment naming its limit, and `/token-miser-debt` lists
+  a `skinflint:` comment naming its limit, and `/skinflint-debt` lists
   them all later.
 - **Subagents follow the same rules.** Every subagent Claude starts is told to
   report back the same way.
 - **On and off per session, or per project.** The mode belongs to the session
   and survives compaction; another session keeps its own. A project can turn
-  it off, or drop the prose or code rules, with `.claude/token-miser.json`.
+  it off, or drop the prose or code rules, with `.claude/skinflint.json`.
 - **Switches that don't misfire.** Only a whole message such as
-  `stop token-miser` switches it; "add a normal mode toggle" does not.
+  `stop skinflint` switches it; "add a normal mode toggle" does not.
 - **Plays well with output styles.** If you use a custom output style, the prose
   rules step aside for it. Prose and code rules can each be switched off.
 
@@ -192,16 +192,16 @@ and every MCP tool:
   ships with Windows. Works from Git Bash, Windows PowerShell 5.1 and
   PowerShell 7, and PowerShell's script execution policy does not matter.
 - **No network access**, ever. No telemetry, no update check.
-- **Private state.** Everything it writes lives in `~/.claude/token-miser/`,
+- **Private state.** Everything it writes lives in `~/.claude/skinflint/`,
   readable only by you.
 
 ### Extras
 
-- `/token-miser-stats` shows how much tool output has been trimmed so far.
-- `/token-miser-debt` lists every shortcut marked with a `token-miser:`
+- `/skinflint-stats` shows how much tool output has been trimmed so far.
+- `/skinflint-debt` lists every shortcut marked with a `skinflint:`
   comment, with when it would be worth doing properly.
-- `/token-miser-review` reviews your diff for code that can be deleted.
-- `/token-miser-audit` ranks everything removable in a file, diff or repo, code
+- `/skinflint-review` reviews your diff for code that can be deleted.
+- `/skinflint-audit` ranks everything removable in a file, diff or repo, code
   and prose, biggest first.
 - A status line showing the mode and roughly how many tokens have been saved.
 
@@ -209,7 +209,7 @@ and every MCP tool:
 
 Measured in the benchmarks below, or read from each plugin's own code:
 
-| | token-miser | [chisle](https://github.com/JayPokale/Chisle) | [ponytail](https://github.com/dietrichgebert/ponytail) | [caveman](https://github.com/JuliusBrussee/caveman) |
+| | skinflint | [chisle](https://github.com/JayPokale/Chisle) | [ponytail](https://github.com/dietrichgebert/ponytail) | [caveman](https://github.com/JuliusBrussee/caveman) |
 |---|---|---|---|---|
 | Output tokens, 20 tasks (% of no plugin) | **49%** | 63% | 67% | 75% |
 | Worst task (% of no plugin) | **68%** | 80% | 110% | 105% |
@@ -231,22 +231,22 @@ You need Claude Code and nothing else. Install once per computer.
 Windows). Run these two commands there, not inside a Claude Code session:
 
 ```sh
-claude plugin marketplace add SkYn3t-Lab/token-miser
-claude plugin install token-miser@token-miser
+claude plugin marketplace add SkYn3t-Lab/skinflint
+claude plugin install skinflint@skinflint
 ```
 
 - The first command tells Claude Code where to find the plugin: this GitHub
   repository. Claude Code calls such a source a *marketplace*. It prints
-  `Successfully added marketplace: token-miser`.
+  `Successfully added marketplace: skinflint`.
 - The second installs the plugin for your user, in every project. The name
-  reads *plugin*@*marketplace*; here both are called `token-miser`.
+  reads *plugin*@*marketplace*; here both are called `skinflint`.
 
 **2. Start a new Claude Code session.** A session that was already open picks
 the plugin up after you type `/reload-plugins` in it.
 
-**3. Check it works.** In the session, type `/token-miser-help`: it lists the
+**3. Check it works.** In the session, type `/skinflint-help`: it lists the
 commands below. From a terminal, `claude plugin list` includes
-`token-miser@token-miser`. On Windows the very first hook builds a small helper
+`skinflint@skinflint`. On Windows the very first hook builds a small helper
 program, which takes under a second and happens once.
 
 If you use another plugin that does the same job, uninstall it first, or
@@ -256,8 +256,8 @@ everything is trimmed twice.
 commands. The second opens a panel: choose *Install for you*.
 
 ```text
-/plugin marketplace add SkYn3t-Lab/token-miser
-/plugin install token-miser@token-miser
+/plugin marketplace add SkYn3t-Lab/skinflint
+/plugin install skinflint@skinflint
 ```
 
 **If adding the marketplace fails**, git on your computer cannot reach the
@@ -268,8 +268,8 @@ command again.
 ### Update
 
 ```sh
-claude plugin marketplace update token-miser
-claude plugin update token-miser@token-miser
+claude plugin marketplace update skinflint
+claude plugin update skinflint@skinflint
 ```
 
 The first fetches the latest version from GitHub, the second installs it.
@@ -278,24 +278,24 @@ Start a new session (or `/reload-plugins`) to use it.
 ### Remove
 
 ```sh
-claude plugin uninstall token-miser@token-miser
-claude plugin marketplace remove token-miser
+claude plugin uninstall skinflint@skinflint
+claude plugin marketplace remove skinflint
 ```
 
 The first removes the plugin; the second removes the marketplace entry as
-well. Either one alone switches token-miser off.
+well. Either one alone switches skinflint off.
 
 ## Use
 
 | Say or type | What happens |
 |---|---|
-| `/token-miser`, `token-miser on` | Turn it on for this session |
-| `stop token-miser`, `normal mode`, `/token-miser off` | Turn it off for this session |
-| `/token-miser-stats` | How much tool output has been trimmed so far |
-| `/token-miser-debt` | List every shortcut marked with a `token-miser:` comment |
-| `/token-miser-review` | Review the current diff for code that can be removed |
-| `/token-miser-audit [path]` | Rank everything removable, code and prose, biggest first |
-| `/token-miser-help` | Show this list |
+| `/skinflint`, `skinflint on` | Turn it on for this session |
+| `stop skinflint`, `normal mode`, `/skinflint off` | Turn it off for this session |
+| `/skinflint-stats` | How much tool output has been trimmed so far |
+| `/skinflint-debt` | List every shortcut marked with a `skinflint:` comment |
+| `/skinflint-review` | Review the current diff for code that can be removed |
+| `/skinflint-audit [path]` | Rank everything removable, code and prose, biggest first |
+| `/skinflint-help` | Show this list |
 
 A switch works only as the whole message: "add a normal mode toggle" does not
 turn anything off. The mode belongs to the session and survives compaction.
@@ -306,24 +306,24 @@ Environment variables, in `settings.json` under `env` or in your shell:
 
 | Variable | Effect |
 |---|---|
-| `TOKEN_MISER_DEFAULT_MODE=off` | Sessions start off; turn it on per session |
-| `TOKEN_MISER_COMPRESS=0` | Leave tool output alone |
-| `TOKEN_MISER_DEDUP=0` | Do not replace repeated output |
-| `TOKEN_MISER_SPILL=0` | Do not save full text to disk |
-| `TOKEN_MISER_TOOLS=Bash,Grep` | Only these tools |
-| `TOKEN_MISER_MAX_BYTES` | Size before lines are cut (default 8000) |
-| `TOKEN_MISER_HEAD_LINES`, `TOKEN_MISER_TAIL_LINES` | Lines kept at each end (60, 40) |
+| `SKINFLINT_DEFAULT_MODE=off` | Sessions start off; turn it on per session |
+| `SKINFLINT_COMPRESS=0` | Leave tool output alone |
+| `SKINFLINT_DEDUP=0` | Do not replace repeated output |
+| `SKINFLINT_SPILL=0` | Do not save full text to disk |
+| `SKINFLINT_TOOLS=Bash,Grep` | Only these tools |
+| `SKINFLINT_MAX_BYTES` | Size before lines are cut (default 8000) |
+| `SKINFLINT_HEAD_LINES`, `SKINFLINT_TAIL_LINES` | Lines kept at each end (60, 40) |
 
 A config file does the same for the mode and for which parts of the rules load:
-`~/.config/token-miser/config.json` (`%APPDATA%\token-miser\config.json` on
+`~/.config/skinflint/config.json` (`%APPDATA%\skinflint\config.json` on
 Windows):
 
 ```json
 { "defaultMode": "on", "sections": { "prose": true, "code": true } }
 ```
 
-A project can override any of these keys in `.claude/token-miser.json` at its
-root, for example `{ "defaultMode": "off" }` to keep token-miser out of one
+A project can override any of these keys in `.claude/skinflint.json` at its
+root, for example `{ "defaultMode": "off" }` to keep skinflint out of one
 repository. The environment variable still wins over both files, and a switch
 typed in a session wins over everything for that session.
 
@@ -333,7 +333,7 @@ If you use a custom output style, the prose rules step aside for it.
 `powershell -NoProfile -ExecutionPolicy Bypass -File "<plugin>\hooks\win\statusline.ps1"`.
 It shows the mode and roughly how many tokens have been saved.
 
-State lives in `~/.claude/token-miser/`: per-session mode, the last output of
+State lives in `~/.claude/skinflint/`: per-session mode, the last output of
 each tool for the duplicate check, saved full texts (the newest 40 are kept)
 and a running total.
 
@@ -354,19 +354,19 @@ correctness without knowing which plugin wrote it. Plugins:
 
 <p align="center"><picture>
   <source media="(prefers-color-scheme: dark)" srcset="assets/charts/output-overall-dark.png">
-  <img src="assets/charts/output-overall-light.png" width="720" alt="Output tokens as a share of no plugin: token-miser 49%, chisle 63%, ponytail 67%, caveman 75%">
+  <img src="assets/charts/output-overall-light.png" width="720" alt="Output tokens as a share of no plugin: skinflint 49%, chisle 63%, ponytail 67%, caveman 75%">
 </picture></p>
 
 | Plugin | Output tokens, all tasks | Average task | Worst task | Tasks longer than no plugin | Correct answers |
 |---|--:|--:|--:|--:|--:|
-| **token-miser** | **49%** | **46%** | **68%** (ratelimit) | **0** | 54/56 |
+| **skinflint** | **49%** | **46%** | **68%** (ratelimit) | **0** | 54/56 |
 | [chisle](https://github.com/JayPokale/Chisle) | 63% | 62% | 80% (unrelated) | 0 | 54/56 |
 | [ponytail](https://github.com/dietrichgebert/ponytail) | 67% | 67% | 110% (retry) | 1 | **55/56** |
 | [caveman](https://github.com/JuliusBrussee/caveman) | 75% | 73% | 105% (cache) | 2 | **55/56** |
 | no plugin | 100% | 100% | 100% | 0 | 54/56 |
 
 Output tokens are a share of what the same model wrote with no plugin, so lower
-is better. token-miser is shortest overall, in every kind of task, and has the
+is better. skinflint is shortest overall, in every kind of task, and has the
 best worst case; no task came out longer than without it.
 
 Correctness is a tie: the plugins are one answer apart out of 56, and the
@@ -378,7 +378,7 @@ The extra runs on four tasks exist to check exactly that.
   <img src="assets/charts/output-by-kind-light.png" width="720" alt="Output tokens by kind of task for each plugin">
 </picture></p>
 
-| Kind of task | token-miser | [chisle](https://github.com/JayPokale/Chisle) | [ponytail](https://github.com/dietrichgebert/ponytail) | [caveman](https://github.com/JuliusBrussee/caveman) |
+| Kind of task | skinflint | [chisle](https://github.com/JayPokale/Chisle) | [ponytail](https://github.com/dietrichgebert/ponytail) | [caveman](https://github.com/JuliusBrussee/caveman) |
 |---|--:|--:|--:|--:|
 | Coding, short | **42%** | 58% | 70% | 87% |
 | Coding, long | **56%** | 64% | 63% | 84% |
@@ -386,9 +386,9 @@ The extra runs on four tasks exist to check exactly that.
 | Explaining, long | **49%** | 63% | 69% | 71% |
 
 <details>
-<summary>Every task (token-miser shortest on 20 of 20)</summary>
+<summary>Every task (skinflint shortest on 20 of 20)</summary>
 
-| Task | Kind | No plugin, tokens | token-miser | chisle | ponytail | caveman |
+| Task | Kind | No plugin, tokens | skinflint | chisle | ponytail | caveman |
 |---|---|--:|--:|--:|--:|--:|
 | `debounce` | coding, short | 1018 | **43** | 65 | 62 | 94 |
 | `dedupe` | coding, short | 334 | **26** | 36 | 33 | 49 |
@@ -427,31 +427,31 @@ as Claude Code would have sent them:
 
 | Plugin | Tool output removed | Results shortened |
 |---|--:|--:|
-| **token-miser** | **4.2%** | **97** |
+| **skinflint** | **4.2%** | **97** |
 | [chisle](https://github.com/JayPokale/Chisle) | 4.0% | 84 |
 | [ponytail](https://github.com/dietrichgebert/ponytail) | 0% (no tool-output hook) | 0 |
 | [caveman](https://github.com/JuliusBrussee/caveman) | 0% (no tool-output hook) | 0 |
 
 Most tool results are short and pass through untouched; the saving comes from
-the 97 long ones token-miser shortened. Results Claude Code had already saved
+the 97 long ones skinflint shortened. Results Claude Code had already saved
 to a file (21 of them) are left out for both, since Claude only ever saw a
 short preview of those.
 
 ### What it saves in dollars
 
 **About $87 a month, or roughly $1,040 a year, for one developer.** That is
-what token-miser would have saved on a month of the author's real Claude Code
+what skinflint would have saved on a month of the author's real Claude Code
 use: 7.0 million output tokens on Opus models, $160 of output at list price.
 
 | Plugin | Saved on what Claude writes | Saved on tool output it reads | Saved per month |
 |---|--:|--:|--:|
-| **token-miser** | **$81.74** | **$5.14** | **$86.88** |
+| **skinflint** | **$81.74** | **$5.14** | **$86.88** |
 | [chisle](https://github.com/JayPokale/Chisle) | $59.30 | $4.89 | $64.20 |
 | [ponytail](https://github.com/dietrichgebert/ponytail) | $52.89 | no tool-output trimming | $52.89 |
 | [caveman](https://github.com/JuliusBrussee/caveman) | $40.07 | no tool-output trimming | $40.07 |
 
 In plain terms: Claude writes about half as many output tokens with
-token-miser, so roughly $51 of every $100 you spend on Claude's output stays in
+skinflint, so roughly $51 of every $100 you spend on Claude's output stays in
 your pocket, and trimmed tool output saves a little more on top.
 
 **Your own number.** Run this against your own Claude Code history; it reads
@@ -478,10 +478,10 @@ your sessions run.
 </details>
 
 Reproduce everything with
-`ARMS="none:- token-miser:<dir> ..." bash benchmarks/run-arms.sh OUTDIR`,
+`ARMS="none:- skinflint:<dir> ..." bash benchmarks/run-arms.sh OUTDIR`,
 `bash benchmarks/grade.sh OUTDIR GRADES.json`,
 `python3 benchmarks/analyze-arms.py OUTDIR GRADES.json`,
-`python3 benchmarks/replay.py --arm token-miser='sh hooks/run.sh compress' ~/.claude/projects --out R.json`
+`python3 benchmarks/replay.py --arm skinflint='sh hooks/run.sh compress' ~/.claude/projects --out R.json`
 and `python3 benchmarks/usage.py`. The data behind every number here is in
 [`benchmarks/results/2026-09-30/`](benchmarks/results/2026-09-30/).
 
@@ -500,22 +500,22 @@ and [`benchmarks/speed.ps1`](benchmarks/speed.ps1) on Windows 11.
 
 | Linux, ms | startup | prompt | subagent | 30 KB log | 150 KB log | 150 KB JSON |
 |---|--:|--:|--:|--:|--:|--:|
-| **token-miser** | **10** | **7** | **7** | **12** | **16** | **15** |
+| **skinflint** | **10** | **7** | **7** | **12** | **16** | **15** |
 | [chisle](https://github.com/JayPokale/Chisle) | 136 | 40 | no hook | 69 | 75 | 66 |
 | [ponytail](https://github.com/dietrichgebert/ponytail) | 36 | 39 | 42 | no hook | no hook | no hook |
 | [caveman](https://github.com/JuliusBrussee/caveman) | 43 | 44 | no hook | no hook | no hook | no hook |
 
 | Windows 11, ms | startup | prompt | subagent | small output | 3000 lines | 30 KB log |
 |---|--:|--:|--:|--:|--:|--:|
-| **token-miser**, Git Bash | **100** | **95** | **95** | **98** | **120** | **125** |
+| **skinflint**, Git Bash | **100** | **95** | **95** | **98** | **120** | **125** |
 | [chisle](https://github.com/JayPokale/Chisle), Git Bash | 260 | 120 | no hook | 122 | 153 | 150 |
 | [ponytail](https://github.com/dietrichgebert/ponytail), Git Bash | 109 | 105 | 104 | no hook | no hook | no hook |
 | [caveman](https://github.com/JuliusBrussee/caveman), Git Bash | 167 | 163 | no hook | no hook | no hook | no hook |
-| **token-miser**, PowerShell 5.1 | **166** | **164** | **162** | **167** | **194** | **194** |
+| **skinflint**, PowerShell 5.1 | **166** | **164** | **162** | **167** | **194** | **194** |
 | [chisle](https://github.com/JayPokale/Chisle), PowerShell 5.1 | 331 | 188 | no hook | 188 | 220 | 224 |
 | [ponytail](https://github.com/dietrichgebert/ponytail), PowerShell 5.1 | 193 | 186 | 182 | no hook | no hook | no hook |
 | [caveman](https://github.com/JuliusBrussee/caveman), PowerShell 5.1 | fails | fails | no hook | no hook | no hook | no hook |
-| **token-miser**, PowerShell 7 | **317** | **301** | **316** | **322** | **363** | **366** |
+| **skinflint**, PowerShell 7 | **317** | **301** | **316** | **322** | **363** | **366** |
 | [chisle](https://github.com/JayPokale/Chisle), PowerShell 7 | 494 | 343 | no hook | 346 | 383 | 371 |
 | [ponytail](https://github.com/dietrichgebert/ponytail), PowerShell 7 | 344 | 336 | 347 | no hook | no hook | no hook |
 | [caveman](https://github.com/JuliusBrussee/caveman), PowerShell 7 | fails | fails | no hook | no hook | no hook | no hook |
@@ -525,7 +525,7 @@ plugin does not run anything at that point (ponytail and caveman do not trim
 tool output at all). caveman's hook commands are written in shell syntax, so
 they fail under PowerShell, which Claude Code uses on Windows when Git Bash is
 not installed. ponytail's prompt hook prints nothing on an ordinary prompt: it
-only reports mode changes. token-miser needs no runtime: on Linux a hook is one
+only reports mode changes. skinflint needs no runtime: on Linux a hook is one
 `sh` and one `awk`; on Windows, Git Bash runs the compiled program directly,
 and PowerShell loads it into the PowerShell that is already running, so no
 second process starts.

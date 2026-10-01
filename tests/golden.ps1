@@ -1,4 +1,4 @@
-# Replays tests/cases/* through the Windows hooks (token-miser.exe, built here
+# Replays tests/cases/* through the Windows hooks (skinflint.exe, built here
 # with the .NET Framework csc.exe) and compares stdout and the files left
 # behind with each case's "expected" and "state", which golden.sh records.
 # Needs only Windows PowerShell 5.1.
@@ -10,17 +10,17 @@ $root = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
 $l1 = [Text.Encoding]::GetEncoding(28591)
 
 # The exe name in run.ps1 must match the source (tools/stamp.sh keeps them in step).
-$src = Join-Path $root 'hooks\win\token-miser.cs'
+$src = Join-Path $root 'hooks\win\skinflint.cs'
 $sha = [Security.Cryptography.SHA256]::Create()
 $id = ([BitConverter]::ToString($sha.ComputeHash([IO.File]::ReadAllBytes($src))) -replace '-', '').Substring(0, 12).ToLowerInvariant()
-if (-not ([IO.File]::ReadAllText((Join-Path $root 'hooks\win\run.ps1'))).Contains("token-miser-$id.exe")) {
+if (-not ([IO.File]::ReadAllText((Join-Path $root 'hooks\win\run.ps1'))).Contains("skinflint-$id.exe")) {
   Write-Output 'build stamp is stale: run sh tools/stamp.sh'
   exit 1
 }
 
-$work = Join-Path ([IO.Path]::GetTempPath()) ('tm-golden-' + [Guid]::NewGuid().ToString('N').Substring(0, 8))
+$work = Join-Path ([IO.Path]::GetTempPath()) ('sf-golden-' + [Guid]::NewGuid().ToString('N').Substring(0, 8))
 [void][IO.Directory]::CreateDirectory($work)
-$exe = Join-Path $work 'token-miser.exe'
+$exe = Join-Path $work 'skinflint.exe'
 $csc = Join-Path $env:WINDIR 'Microsoft.NET\Framework64\v4.0.30319\csc.exe'
 & $csc /nologo /optimize+ /target:exe "/out:$exe" $src | Out-Host
 if (-not [IO.File]::Exists($exe)) { Write-Output 'build failed'; exit 1 }
@@ -61,7 +61,7 @@ foreach ($name in $names) {
   $psi.UseShellExecute = $false
   $psi.RedirectStandardInput = $true; $psi.RedirectStandardOutput = $true; $psi.RedirectStandardError = $true
   $psi.WorkingDirectory = Join-Path $sb 'work'
-  foreach ($k in @($psi.EnvironmentVariables.Keys)) { if ($k -like 'TOKEN_MISER_*' -or $k -eq 'CLAUDE_PLUGIN_DATA') { $psi.EnvironmentVariables.Remove($k) } }
+  foreach ($k in @($psi.EnvironmentVariables.Keys)) { if ($k -like 'SKINFLINT_*' -or $k -eq 'CLAUDE_PLUGIN_DATA') { $psi.EnvironmentVariables.Remove($k) } }
   $psi.EnvironmentVariables['CLAUDE_CONFIG_DIR'] = Join-Path $sb 'cfg'
   $psi.EnvironmentVariables['XDG_CONFIG_HOME'] = Join-Path $sb 'xdg'
   $psi.EnvironmentVariables['CLAUDE_PLUGIN_ROOT'] = $root
@@ -86,7 +86,7 @@ foreach ($name in $names) {
   # the output is: count it as if each occurrence were the 4 bytes of <SB>.
   $occ = ($raw.Length - $raw.Replace((Slash $sb), '').Length) / (Slash $sb).Length
   $st = Get-State $sb
-  $m = [regex]::Match($st, '(?m)^(cfg/token-miser/stats \d+ saved )(\d+)')
+  $m = [regex]::Match($st, '(?m)^(cfg/skinflint/stats \d+ saved )(\d+)')
   if ($m.Success) {
     $v = [long]$m.Groups[2].Value + $occ * ((Slash $sb).Length - 4)
     $st = $st.Substring(0, $m.Groups[2].Index) + $v + $st.Substring($m.Groups[2].Index + $m.Groups[2].Length)

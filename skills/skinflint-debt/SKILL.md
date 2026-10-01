@@ -1,18 +1,18 @@
 ---
-name: token-miser-debt
+name: skinflint-debt
 description: >
-  List every deliberate shortcut marked with a `token-miser:` comment in the
+  List every deliberate shortcut marked with a `skinflint:` comment in the
   repository, so skipped work is tracked instead of forgotten. Use for
-  "/token-miser-debt", "token-miser debt" or "what did we skip".
+  "/skinflint-debt", "skinflint debt" or "what did we skip".
 ---
 
-Collect every comment that contains `token-miser:` in the current repository
+Collect every comment that contains `skinflint:` in the current repository
 and report them as a ledger. Change nothing.
 
 Search with one command, skipping vendored and generated folders:
 
 ```sh
-git grep -n "token-miser:" -- . ':!node_modules' ':!dist' ':!build' 2>/dev/null || grep -rn "token-miser:" --exclude-dir=.git --exclude-dir=node_modules --exclude-dir=dist --exclude-dir=build .
+git grep -n "skinflint:" -- . ':!node_modules' ':!dist' ':!build' 2>/dev/null || grep -rn "skinflint:" --exclude-dir=.git --exclude-dir=node_modules --exclude-dir=dist --exclude-dir=build .
 ```
 
 Report one line per shortcut, grouped by file, no introduction:

@@ -15,7 +15,7 @@ param([Parameter(Mandatory)][string[]]$Plugin, [int]$Rounds = 15)
 #   powershell -ExecutionPolicy Bypass -File benchmarks\speed.ps1 -Plugin a=C:\a,b=C:\b
 
 $ErrorActionPreference = 'Stop'
-$base = Join-Path $env:TEMP ('tm-speed-' + [guid]::NewGuid().ToString('N').Substring(0, 8))
+$base = Join-Path $env:TEMP ('sf-speed-' + [guid]::NewGuid().ToString('N').Substring(0, 8))
 $data = Join-Path $base 'data'
 [void][IO.Directory]::CreateDirectory($data)
 $bash = 'C:\Program Files\Git\bin\bash.exe'; if (-not (Test-Path $bash)) { $bash = $null }

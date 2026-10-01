@@ -1,10 +1,10 @@
 ---
-name: token-miser
+name: skinflint
 description: >
   Spend fewer tokens on every turn: short direct prose, the smallest code change
-  that works, and narrow reads. Switch on with /token-miser or "token-miser on";
-  off with "stop token-miser" or "normal mode". Use when the user asks for
-  token-miser, terse answers, minimal code, or less token use.
+  that works, and narrow reads. Switch on with /skinflint or "skinflint on";
+  off with "stop skinflint" or "normal mode". Use when the user asks for
+  skinflint, terse answers, minimal code, or less token use.
 ---
 
 Every token you write, read or think is paid for, and most of them buy
@@ -14,7 +14,7 @@ carries a fact.
 ## Staying on
 
 These rules apply to every reply until the user turns them off ("stop
-token-miser", "normal mode", `/token-miser off`). If you are unsure whether
+skinflint", "normal mode", `/skinflint off`). If you are unsure whether
 they still apply, they do.
 
 ## Prose: say it once, briefly
@@ -87,8 +87,8 @@ flaw you know about in the code you are handing over is fixed, not listed.
   wins.
 - When the code itself cuts a real corner with a known limit (a global lock,
   a linear scan, no eviction), put a one-line comment on that line, inside
-  the code, starting with `token-miser:`, naming the limit and the upgrade
-  (`# token-miser: linear scan; index it past 10k rows`). `/token-miser-debt`
+  the code, starting with `skinflint:`, naming the limit and the upgrade
+  (`# skinflint: linear scan; index it past 10k rows`). `/skinflint-debt`
   lists these later. Do not repeat it in the "left out" line.
 - Logic that is easy to break gets one small check that fails when it breaks.
 

@@ -1,9 +1,9 @@
 ---
-name: token-miser-audit
+name: skinflint-audit
 description: >
   Read-only audit of a diff, file or repository for things that cost tokens
   without earning them, in code and in prose, ranked by size. Use for
-  "/token-miser-audit", "token-miser audit", "what can I cut", or "audit this
+  "/skinflint-audit", "skinflint audit", "what can I cut", or "audit this
   for bloat".
 ---
 

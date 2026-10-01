@@ -1,6 +1,6 @@
 #!/bin/sh
 # Stamps the Windows build id (first 12 hex digits of the SHA-256 of
-# hooks/win/token-miser.cs) into hooks/win/run.ps1 and writes the hook lines
+# hooks/win/skinflint.cs) into hooks/win/run.ps1 and writes the hook lines
 # of .claude-plugin/plugin.json. Run after any change to the C# source;
 # tests/golden.sh fails while the stamp is stale.
 #   sh tools/stamp.sh              rewrite
@@ -8,8 +8,8 @@
 #   sh tools/stamp.sh --line HOOK  print one hook line as Claude Code runs it
 set -eu
 cd "$(dirname "$0")/.."
-if command -v sha256sum >/dev/null 2>&1; then sum=$(sha256sum hooks/win/token-miser.cs)
-else sum=$(shasum -a 256 hooks/win/token-miser.cs); fi
+if command -v sha256sum >/dev/null 2>&1; then sum=$(sha256sum hooks/win/skinflint.cs)
+else sum=$(shasum -a 256 hooks/win/skinflint.cs); fi
 id=$(printf '%s' "$sum" | cut -c1-12)
 
 # One hook line serves every platform. Claude Code runs it with sh (Git Bash
@@ -27,12 +27,12 @@ id=$(printf '%s' "$sum" | cut -c1-12)
 #        apply. Only when the exe is not built yet does line 6 run, which
 #        builds it and runs the hook.
 line() {
-  exe="\${CLAUDE_PLUGIN_DATA}/token-miser-$id.exe"
+  exe="\${CLAUDE_PLUGIN_DATA}/skinflint-$id.exe"
   printf '%s\n' '{ true "\" <# "; } >/dev/null'
   printf '%s\n' "[ -f \"$exe\" ] && exec \"$exe\" $1"
   printf '%s\n' "exec sh \"\${CLAUDE_PLUGIN_ROOT}/hooks/run.sh\" $1"
   printf '%s\n' '#> } > $null'
-  printf '%s\n' "if ([IO.File]::Exists(\"$exe\")) { [void][Reflection.Assembly]::LoadFile(\"$exe\"); [void][TokenMiser.Hook]::Main([string[]]@(\"$1\")); break }"
+  printf '%s\n' "if ([IO.File]::Exists(\"$exe\")) { [void][Reflection.Assembly]::LoadFile(\"$exe\"); [void][Skinflint.Hook]::Main([string[]]@(\"$1\")); break }"
   printf '%s' "powershell -NoProfile -ExecutionPolicy Bypass -File \"\${CLAUDE_PLUGIN_ROOT}/hooks/win/run.ps1\" $1"
 }
 
@@ -45,15 +45,15 @@ tmp=$(mktemp)
 trap 'rm -f "$tmp" "$tmp.ps1"' EXIT
 cat > "$tmp" <<EOF
 {
-  "name": "token-miser",
+  "name": "skinflint",
   "version": "0.2.0",
   "description": "Short answers, minimal code and shorter tool output for Claude Code, with nothing to install: POSIX sh and awk on Linux and macOS, a self-built exe on Windows.",
   "author": {
     "name": "Gr3yF0x87",
     "url": "https://github.com/Gr3yF0x87"
   },
-  "homepage": "https://github.com/SkYn3t-Lab/token-miser",
-  "repository": "https://github.com/SkYn3t-Lab/token-miser",
+  "homepage": "https://github.com/SkYn3t-Lab/skinflint",
+  "repository": "https://github.com/SkYn3t-Lab/skinflint",
   "license": "MIT",
   "keywords": ["tokens", "cost", "concise", "minimal code", "tool output"],
   "hooks": {
@@ -61,7 +61,7 @@ cat > "$tmp" <<EOF
       {
         "matcher": "startup|resume|clear|compact|fork",
         "hooks": [
-          { "type": "command", "command": "$(json activate)", "timeout": 30, "statusMessage": "Loading token-miser..." }
+          { "type": "command", "command": "$(json activate)", "timeout": 30, "statusMessage": "Loading skinflint..." }
         ]
       }
     ],
@@ -90,7 +90,7 @@ cat > "$tmp" <<EOF
   }
 }
 EOF
-sed "s/token-miser-[A-Za-z0-9]*\\.exe'/token-miser-$id.exe'/" hooks/win/run.ps1 > "$tmp.ps1"
+sed "s/skinflint-[A-Za-z0-9]*\\.exe'/skinflint-$id.exe'/" hooks/win/run.ps1 > "$tmp.ps1"
 
 if [ "${1:-}" = --check ]; then
   cmp -s "$tmp" .claude-plugin/plugin.json && cmp -s "$tmp.ps1" hooks/win/run.ps1 && exit 0

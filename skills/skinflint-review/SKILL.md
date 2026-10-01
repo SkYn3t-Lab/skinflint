@@ -1,8 +1,8 @@
 ---
-name: token-miser-review
+name: skinflint-review
 description: >
   Review a diff or file for code that can be deleted or made simpler. One line
-  per finding, no praise. Use for "/token-miser-review", "token-miser review"
+  per finding, no praise. Use for "/skinflint-review", "skinflint review"
   or "review this for bloat".
 ---
 

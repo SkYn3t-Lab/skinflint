@@ -1,1 +1,1 @@
-{"hookSpecificOutput":{"hookEventName":"PostToolUse","updatedToolOutput":{"stdout":"abc é\n[token-miser: line above repeated 399 more times]\n� x �😀","stderr":""}}}
+{"hookSpecificOutput":{"hookEventName":"PostToolUse","updatedToolOutput":{"stdout":"abc é\n[skinflint: line above repeated 399 more times]\n� x �😀","stderr":""}}}

@@ -8,7 +8,7 @@ Maintainer tool: the cases themselves are plain files, so the runners
   env         optional, KEY=VALUE lines
   setup/      optional files placed in the sandbox first:
                 cfg/   is CLAUDE_CONFIG_DIR
-                xdg/   is XDG_CONFIG_HOME (the config file lives in xdg/token-miser/)
+                xdg/   is XDG_CONFIG_HOME (the config file lives in xdg/skinflint/)
                 work/  is the working directory
 Expected output ("expected") and end state ("state") are recorded by
 golden.sh --record and then must hold for both implementations.
@@ -42,7 +42,7 @@ def lines(n, fmt='line {i}: some ordinary build output here'):
     return '\n'.join(fmt.format(i=i) for i in range(1, n + 1))
 
 
-SKILL = 'skills/token-miser/SKILL.md'
+SKILL = 'skills/skinflint/SKILL.md'
 
 # ---------- 5.1 SessionStart ----------
 case('5.1-startup', 'activate', {'session_id': 's1', 'source': 'startup'})
@@ -55,31 +55,31 @@ case('5.1-fork', 'activate', {'session_id': 's1', 'source': 'fork'})
 case('5.1-statusline-set', 'activate', {'source': 'startup'},
      setup={'cfg/settings.json': '{"statusLine": {"type": "command", "command": "x"}}'})
 case('5.1-statusline-unset', 'activate', {'source': 'startup'}, setup={'cfg/settings.json': '{"model": "x"}'})
-case('5.1-off-env', 'activate', {'source': 'startup'}, env={'TOKEN_MISER_DEFAULT_MODE': 'OFF'})
-case('5.1-off-config', 'activate', {'source': 'startup'}, setup={'xdg/token-miser/config.json': '{"defaultMode": "Off"}'})
-case('5.1-env-beats-config', 'activate', {'source': 'resume'}, env={'TOKEN_MISER_DEFAULT_MODE': 'on'},
-     setup={'xdg/token-miser/config.json': '{"defaultMode": "off"}'})
+case('5.1-off-env', 'activate', {'source': 'startup'}, env={'SKINFLINT_DEFAULT_MODE': 'OFF'})
+case('5.1-off-config', 'activate', {'source': 'startup'}, setup={'xdg/skinflint/config.json': '{"defaultMode": "Off"}'})
+case('5.1-env-beats-config', 'activate', {'source': 'resume'}, env={'SKINFLINT_DEFAULT_MODE': 'on'},
+     setup={'xdg/skinflint/config.json': '{"defaultMode": "off"}'})
 case('5.1-project-off', 'activate', {'source': 'startup'},
-     setup={'xdg/token-miser/config.json': '{"defaultMode": "on"}', 'work/.claude/token-miser.json': '{"defaultMode": "off"}'})
+     setup={'xdg/skinflint/config.json': '{"defaultMode": "on"}', 'work/.claude/skinflint.json': '{"defaultMode": "off"}'})
 case('5.1-project-keeps-user-key', 'activate', {'source': 'resume'},
-     setup={'xdg/token-miser/config.json': '{"defaultMode": "off"}', 'work/.claude/token-miser.json': '{"sections": {"code": false}}'})
+     setup={'xdg/skinflint/config.json': '{"defaultMode": "off"}', 'work/.claude/skinflint.json': '{"sections": {"code": false}}'})
 case('5.1-project-invalid', 'activate', {'source': 'resume'},
-     setup={'xdg/token-miser/config.json': '{"defaultMode": "off"}', 'work/.claude/token-miser.json': '{"defaultMode": on}'})
+     setup={'xdg/skinflint/config.json': '{"defaultMode": "off"}', 'work/.claude/skinflint.json': '{"defaultMode": on}'})
 case('3-project-sections', 'prompt', {'prompt': 'x'},
-     setup={'xdg/token-miser/config.json': '{"sections": {"prose": false}}', 'work/.claude/token-miser.json': '{"sections": {"prose": true, "code": false}}'})
-case('5.1-config-bom', 'activate', {'source': 'resume'}, setup={'xdg/token-miser/config.json': '\ufeff{"defaultMode": "off"}'})
-case('5.1-config-invalid', 'activate', {'source': 'resume'}, setup={'xdg/token-miser/config.json': '{"defaultMode": off}'})
-case('5.1-config-wrong-type', 'activate', {'source': 'resume'}, setup={'xdg/token-miser/config.json': '{"defaultMode": false}'})
-case('5.1-env-invalid', 'activate', {'source': 'resume'}, env={'TOKEN_MISER_DEFAULT_MODE': 'lite'})
-case('5.1-session-off', 'activate', {'session_id': 's1', 'source': 'compact'}, setup={'cfg/token-miser/sessions/s1.mode': 'off'})
+     setup={'xdg/skinflint/config.json': '{"sections": {"prose": false}}', 'work/.claude/skinflint.json': '{"sections": {"prose": true, "code": false}}'})
+case('5.1-config-bom', 'activate', {'source': 'resume'}, setup={'xdg/skinflint/config.json': '\ufeff{"defaultMode": "off"}'})
+case('5.1-config-invalid', 'activate', {'source': 'resume'}, setup={'xdg/skinflint/config.json': '{"defaultMode": off}'})
+case('5.1-config-wrong-type', 'activate', {'source': 'resume'}, setup={'xdg/skinflint/config.json': '{"defaultMode": false}'})
+case('5.1-env-invalid', 'activate', {'source': 'resume'}, env={'SKINFLINT_DEFAULT_MODE': 'lite'})
+case('5.1-session-off', 'activate', {'session_id': 's1', 'source': 'compact'}, setup={'cfg/skinflint/sessions/s1.mode': 'off'})
 case('5.1-session-on-beats-default', 'activate', {'session_id': 's1', 'source': 'resume'},
-     env={'TOKEN_MISER_DEFAULT_MODE': 'off'}, setup={'cfg/token-miser/sessions/s1.mode': ' ON\n'})
+     env={'SKINFLINT_DEFAULT_MODE': 'off'}, setup={'cfg/skinflint/sessions/s1.mode': ' ON\n'})
 case('5.1-session-garbage', 'activate', {'session_id': 's1', 'source': 'resume'},
-     env={'TOKEN_MISER_DEFAULT_MODE': 'off'}, setup={'cfg/token-miser/sessions/s1.mode': 'maybe'})
-case('3-no-prose', 'activate', {'source': 'startup'}, setup={'xdg/token-miser/config.json': '{"sections": {"prose": false}}'})
-case('3-no-code', 'activate', {'source': 'startup'}, setup={'xdg/token-miser/config.json': '{"sections": {"code": false}}'})
+     env={'SKINFLINT_DEFAULT_MODE': 'off'}, setup={'cfg/skinflint/sessions/s1.mode': 'maybe'})
+case('3-no-prose', 'activate', {'source': 'startup'}, setup={'xdg/skinflint/config.json': '{"sections": {"prose": false}}'})
+case('3-no-code', 'activate', {'source': 'startup'}, setup={'xdg/skinflint/config.json': '{"sections": {"code": false}}'})
 case('3-neither', 'activate', {'source': 'startup'},
-     setup={'xdg/token-miser/config.json': '{"sections": {"prose": false, "code": false}}'})
+     setup={'xdg/skinflint/config.json': '{"sections": {"prose": false, "code": false}}'})
 case('3-output-style', 'activate', {'source': 'startup'}, setup={'work/.claude/settings.json': '{"outputStyle": "Explanatory"}'})
 case('3-output-style-default', 'activate', {'source': 'startup'}, setup={'work/.claude/settings.json': '{"outputStyle": " Default "}'})
 case('3-output-style-local-first', 'activate', {'source': 'startup'},
@@ -88,7 +88,7 @@ case('3-output-style-empty-skipped', 'activate', {'source': 'startup'},
      setup={'work/.claude/settings.json': '{"outputStyle": "  "}', 'cfg/settings.json': '{"outputStyle": "Learning", "statusLine": 1}'})
 case('3-output-style-not-string', 'activate', {'source': 'startup'}, setup={'work/.claude/settings.json': '{"outputStyle": 3}'})
 case('3-explicit-prose-wins', 'prompt', {'prompt': 'x'},
-     setup={'xdg/token-miser/config.json': '{"sections": {"prose": true}}', 'work/.claude/settings.json': '{"outputStyle": "Learning"}'})
+     setup={'xdg/skinflint/config.json': '{"sections": {"prose": true}}', 'work/.claude/settings.json': '{"outputStyle": "Learning"}'})
 case('1-invalid-json', 'activate', '{"source": "startup",}')
 case('1-not-object', 'activate', '["startup"]')
 case('1-invalid-utf8', 'activate', b'{"source": "st\xffartup"}')
@@ -98,46 +98,46 @@ case('1-trailing-garbage', 'activate', '{"source": "resume"} x')
 # ---------- 5.2 UserPromptSubmit ----------
 case('5.2-plain', 'prompt', {'session_id': 's1', 'prompt': 'fix the bug'})
 case('5.2-no-prompt', 'prompt', {'session_id': 's1'})
-for i, f in enumerate(['stop token-miser', 'token-miser off', 'token-miser mode off', '/token-miser off',
-                       'disable token-miser', 'turn off token-miser', 'deactivate token-miser', 'normal mode']):
+for i, f in enumerate(['stop skinflint', 'skinflint off', 'skinflint mode off', '/skinflint off',
+                       'disable skinflint', 'turn off skinflint', 'deactivate skinflint', 'normal mode']):
     case('5.2-off-%d' % i, 'prompt', {'session_id': 's1', 'prompt': f})
-for i, f in enumerate(['/token-miser', '/token-miser on', 'token-miser on', 'token-miser mode', 'token-miser mode on',
-                       'start token-miser', 'enable token-miser', 'turn on token-miser', 'activate token-miser', 'use token-miser']):
-    case('5.2-on-%d' % i, 'prompt', {'session_id': 's1', 'prompt': f}, setup={'cfg/token-miser/sessions/s1.mode': 'off'})
-for i, f in enumerate(['  Stop   Token Miser! ', '`/token-miser off`', "'normal mode.'", 'TOKENMISER OFF', '"stop token-miser"',
-                       'stop\ttoken-miser\n', 'Token Miser Mode Off.']):
+for i, f in enumerate(['/skinflint', '/skinflint on', 'skinflint on', 'skinflint mode', 'skinflint mode on',
+                       'start skinflint', 'enable skinflint', 'turn on skinflint', 'activate skinflint', 'use skinflint']):
+    case('5.2-on-%d' % i, 'prompt', {'session_id': 's1', 'prompt': f}, setup={'cfg/skinflint/sessions/s1.mode': 'off'})
+for i, f in enumerate(['  Stop   Skin Flint! ', '`/skinflint off`', "'normal mode.'", 'SKIN-FLINT OFF', '"stop skinflint"',
+                       'stop\tskinflint\n', 'Skin Flint Mode Off.']):
     case('5.2-form-%d' % i, 'prompt', {'session_id': 's1', 'prompt': f})
-for i, f in enumerate(['add a normal mode toggle', "don't stop token-miser", 'stop token-miser now', 'please turn off token-miser',
-                       'normal mode?', 'stop token-miser!!', '`stop token-miser"']):
+for i, f in enumerate(['add a normal mode toggle', "don't stop skinflint", 'stop skinflint now', 'please turn off skinflint',
+                       'normal mode?', 'stop skinflint!!', '`stop skinflint"']):
     case('5.2-not-switch-%d' % i, 'prompt', {'session_id': 's1', 'prompt': f})
-case('5.2-off-quiet', 'prompt', {'session_id': 's1', 'prompt': 'hi'}, setup={'cfg/token-miser/sessions/s1.mode': 'off'})
-case('5.2-bad-sid', 'prompt', {'session_id': '../x', 'prompt': 'stop token-miser'})
-case('5.2-long-sid', 'prompt', {'session_id': 'a' * 129, 'prompt': 'stop token-miser'})
-case('5.2-no-prose', 'prompt', {'prompt': 'x'}, setup={'xdg/token-miser/config.json': '{"sections": {"prose": false}}'})
-case('5.2-no-code', 'prompt', {'prompt': 'x'}, setup={'xdg/token-miser/config.json': '{"sections": {"code": false}}'})
+case('5.2-off-quiet', 'prompt', {'session_id': 's1', 'prompt': 'hi'}, setup={'cfg/skinflint/sessions/s1.mode': 'off'})
+case('5.2-bad-sid', 'prompt', {'session_id': '../x', 'prompt': 'stop skinflint'})
+case('5.2-long-sid', 'prompt', {'session_id': 'a' * 129, 'prompt': 'stop skinflint'})
+case('5.2-no-prose', 'prompt', {'prompt': 'x'}, setup={'xdg/skinflint/config.json': '{"sections": {"prose": false}}'})
+case('5.2-no-code', 'prompt', {'prompt': 'x'}, setup={'xdg/skinflint/config.json': '{"sections": {"code": false}}'})
 
 # ---------- 5.3 SubagentStart ----------
 case('5.3-on', 'subagent', {'session_id': 's1', 'agent_type': 'Explore'})
-case('5.3-off', 'subagent', {'session_id': 's1'}, setup={'cfg/token-miser/sessions/s1.mode': 'off'})
+case('5.3-off', 'subagent', {'session_id': 's1'}, setup={'cfg/skinflint/sessions/s1.mode': 'off'})
 
 # ---------- 4.1 eligibility ----------
 BIG = lines(300)
 case('4.1-small', 'compress', bash('hello'))
-case('4.1-mode-off', 'compress', bash(BIG), setup={'cfg/token-miser/sessions/s1.mode': 'off'})
-case('4.1-compress-off', 'compress', bash(BIG), env={'TOKEN_MISER_COMPRESS': '0'})
+case('4.1-mode-off', 'compress', bash(BIG), setup={'cfg/skinflint/sessions/s1.mode': 'off'})
+case('4.1-compress-off', 'compress', bash(BIG), env={'SKINFLINT_COMPRESS': '0'})
 case('4.1-read-never', 'compress', {'session_id': 's1', 'tool_name': 'Read', 'tool_use_id': 't', 'tool_response': BIG},
-     env={'TOKEN_MISER_TOOLS': 'Read'})
+     env={'SKINFLINT_TOOLS': 'Read'})
 case('4.1-tools-list', 'compress', {'session_id': 's1', 'tool_name': 'Grep', 'tool_use_id': 't', 'tool_response': {'content': BIG}},
-     env={'TOKEN_MISER_TOOLS': ' Bash , Grep'})
-case('4.1-tools-list-miss', 'compress', bash(BIG), env={'TOKEN_MISER_TOOLS': 'Grep'})
+     env={'SKINFLINT_TOOLS': ' Bash , Grep'})
+case('4.1-tools-list-miss', 'compress', bash(BIG), env={'SKINFLINT_TOOLS': 'Grep'})
 case('4.1-mcp', 'compress', {'session_id': 's1', 'tool_name': 'mcp__srv__q', 'tool_use_id': 't',
                              'tool_response': [{'type': 'text', 'text': BIG}]})
 case('4.1-unknown-tool', 'compress', {'session_id': 's1', 'tool_name': 'Frob', 'tool_use_id': 't', 'tool_response': BIG})
 case('4.1-image', 'compress', bash(BIG, resp_extra={'isImage': True}))
 case('4.1-interrupted', 'compress', bash(BIG, resp_extra={'interrupted': True}))
 case('4.1-persisted', 'compress', bash(BIG, resp_extra={'persistedOutputPath': '/x/y.txt', 'persistedOutputSize': 99999}))
-case('4.1-spill-read', 'compress', bash(BIG, cmd='grep -n x ~/.claude/token-miser/spill/Bash-1.txt'))
-case('4.1-spill-read-win', 'compress', bash(BIG, cmd='findstr x C:\\u\\.claude\\token-miser\\spill\\a.txt'))
+case('4.1-spill-read', 'compress', bash(BIG, cmd='grep -n x ~/.claude/skinflint/spill/Bash-1.txt'))
+case('4.1-spill-read-win', 'compress', bash(BIG, cmd='findstr x C:\\u\\.claude\\skinflint\\spill\\a.txt'))
 case('4.1.2-nul-one', 'compress', bash(BIG + '\u0000'))
 case('4.1.2-nul-utf16', 'compress', bash('\u0000'.join('Windows tool line %d of UTF-16 output\r\n' % i for i in range(200))))
 case('4.1.2-nul-few', 'compress', bash('ok' + '\u0000' * 10 + 'done'))
@@ -198,8 +198,8 @@ case('4.2.7-no-error-phrases', 'compress', bash('\n'.join(['build 0 errors, 0 wa
 case('4.2.7-error-at-edges', 'compress', bash(lines(60) + '\nerror at first cut line\n' + lines(500) + '\nerror at last cut line\n' + lines(40)))
 case('4.2.7-error-word-bounds', 'compress', bash('\n'.join(['terror in the night', 'errorless', 'my_error here', 'failover done', 'the failure mode', 'errno=2', 'panic!', "can't open", 'no such file or directory'] * 300)))
 case('4.2.7-long-rescued-line', 'compress', bash(lines(100) + '\nerror ' + 'q' * 600 + '\n' + lines(200)))
-case('4.2.7-env-limits', 'compress', bash(lines(400)), env={'TOKEN_MISER_MAX_BYTES': '2000', 'TOKEN_MISER_HEAD_LINES': '5', 'TOKEN_MISER_TAIL_LINES': '3'})
-case('4.2.7-env-invalid', 'compress', bash(lines(400)), env={'TOKEN_MISER_MAX_BYTES': '12x', 'TOKEN_MISER_HEAD_LINES': '0', 'TOKEN_MISER_TAIL_LINES': '9999999999'})
+case('4.2.7-env-limits', 'compress', bash(lines(400)), env={'SKINFLINT_MAX_BYTES': '2000', 'SKINFLINT_HEAD_LINES': '5', 'SKINFLINT_TAIL_LINES': '3'})
+case('4.2.7-env-invalid', 'compress', bash(lines(400)), env={'SKINFLINT_MAX_BYTES': '12x', 'SKINFLINT_HEAD_LINES': '0', 'SKINFLINT_TAIL_LINES': '9999999999'})
 case('4.2.7-stamps-in-head', 'compress', bash('\n'.join('12:00:%02d tick' % (i % 60) for i in range(100)) + '\n' + lines(3000)))
 # ---------- 4.2.8 cut by bytes ----------
 case('4.2.8-bytes', 'compress', bash('\n'.join(('{"k%d": "' % i) + 'v' * 3000 + '"}' for i in range(10))))
@@ -229,26 +229,26 @@ case('4.4-credential', 'compress', bash(lines(300) + '\nexport API_KEY="abcd1234
 case('4.4-private-key', 'compress', bash('-----BEGIN OPENSSH PRIVATE KEY-----\n' + lines(400)))
 case('4.4-github-token', 'compress', bash(lines(200) + '\ntoken ghp_' + 'x' * 36 + '\n' + lines(200)))
 case('4.4-bearer', 'compress', bash(lines(200) + '\nAuthorization: Bearer abcdefghijklmnopqrstuv\n' + lines(200)))
-case('4.4-spill-off', 'compress', bash(lines(400)), env={'TOKEN_MISER_SPILL': '0'})
+case('4.4-spill-off', 'compress', bash(lines(400)), env={'SKINFLINT_SPILL': '0'})
 case('4.4-no-tool-use-id', 'compress', bash(lines(400), tuid=None))
 case('4.4-tuid-sanitised', 'compress', bash(lines(400), tuid='../../evil id'))
 case('4.4-tool-name-sanitised', 'compress', {'session_id': 's1', 'tool_name': 'mcp__a.b/c', 'tool_use_id': 't9', 'tool_response': lines(400)})
 # ---------- 4.5 dedup ----------
 UNIT = lines(300)
-case('4.5-dup', 'compress', bash(UNIT, tuid='t2'), setup={'cfg/token-miser/sessions/s1.Bash.last': 't1\n' + UNIT + '\x1e'})
-case('4.5-same-id', 'compress', bash(UNIT, tuid='t1'), setup={'cfg/token-miser/sessions/s1.Bash.last': 't1\n' + UNIT + '\x1e'})
-case('4.5-different', 'compress', bash(UNIT, tuid='t2'), setup={'cfg/token-miser/sessions/s1.Bash.last': 't1\n' + UNIT + 'x\x1e'})
-case('4.5-dedup-off', 'compress', bash(UNIT, tuid='t2'), env={'TOKEN_MISER_DEDUP': '0'},
-     setup={'cfg/token-miser/sessions/s1.Bash.last': 't1\n' + UNIT + '\x1e'})
+case('4.5-dup', 'compress', bash(UNIT, tuid='t2'), setup={'cfg/skinflint/sessions/s1.Bash.last': 't1\n' + UNIT + '\x1e'})
+case('4.5-same-id', 'compress', bash(UNIT, tuid='t1'), setup={'cfg/skinflint/sessions/s1.Bash.last': 't1\n' + UNIT + '\x1e'})
+case('4.5-different', 'compress', bash(UNIT, tuid='t2'), setup={'cfg/skinflint/sessions/s1.Bash.last': 't1\n' + UNIT + 'x\x1e'})
+case('4.5-dedup-off', 'compress', bash(UNIT, tuid='t2'), env={'SKINFLINT_DEDUP': '0'},
+     setup={'cfg/skinflint/sessions/s1.Bash.last': 't1\n' + UNIT + '\x1e'})
 case('4.5-no-session', 'compress', bash(UNIT, tuid='t2', sid=''))
-case('4.5-small-unit', 'compress', bash(lines(40), tuid='t2'), setup={'cfg/token-miser/sessions/s1.Bash.last': 't1\n' + lines(40) + '\x1e'})
+case('4.5-small-unit', 'compress', bash(lines(40), tuid='t2'), setup={'cfg/skinflint/sessions/s1.Bash.last': 't1\n' + lines(40) + '\x1e'})
 case('4.5-dup-blocks', 'compress', {'session_id': 's1', 'tool_name': 'mcp__x', 'tool_use_id': 't2',
                                     'tool_response': [{'type': 'text', 'text': UNIT}, {'type': 'text', 'text': 'b'}]},
-     setup={'cfg/token-miser/sessions/s1.mcp__x.last': 't1\n' + UNIT + '\x1eb'})
+     setup={'cfg/skinflint/sessions/s1.mcp__x.last': 't1\n' + UNIT + '\x1eb'})
 # ---------- stats (2) ----------
 case('2-stats-new', 'compress', bash(lines(400)))
-case('2-stats-add', 'compress', bash(lines(400)), setup={'cfg/token-miser/stats': 'saved 100\nevents 2\n'})
-case('2-stats-corrupt', 'compress', bash(lines(400)), setup={'cfg/token-miser/stats': 'saved lots\n'})
+case('2-stats-add', 'compress', bash(lines(400)), setup={'cfg/skinflint/stats': 'saved 100\nevents 2\n'})
+case('2-stats-corrupt', 'compress', bash(lines(400)), setup={'cfg/skinflint/stats': 'saved lots\n'})
 # ---------- 1 JSON details ----------
 case('1-escapes', 'compress', bash('\n'.join('tab\there "q" back\\slash \u00e9 \U0001F600 ctl\x01 del\x7f %d' % i for i in range(300))))
 case('1-lone-surrogate', 'compress', '{"session_id":"s1","tool_name":"Bash","tool_use_id":"t","tool_response":{"stdout":"%s\\ud800 x \\udc00\\ud83d\\ude00","stderr":""}}' % ('abc \\u00e9\\n' * 400))

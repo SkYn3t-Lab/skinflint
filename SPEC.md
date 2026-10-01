@@ -1,7 +1,7 @@
-# token-miser behaviour specification
+# skinflint behaviour specification
 
 This file is the contract. There are two implementations, POSIX sh + awk
-(`hooks/*.sh`, `hooks/lib/*.awk`) and C# (`hooks/win/token-miser.cs`), and
+(`hooks/*.sh`, `hooks/lib/*.awk`) and C# (`hooks/win/skinflint.cs`), and
 for the same input and the same files on disk they must produce the same
 bytes, apart from the platform differences named in section 8. The tests in
 `tests/` are generated from this document, not from either implementation.
@@ -32,7 +32,7 @@ bytes, apart from the platform differences named in section 8. The tests in
 
 `CLAUDE_DIR` is `$CLAUDE_CONFIG_DIR` when set and non-empty, else
 `$HOME/.claude` (`%USERPROFILE%\.claude` on Windows). State lives in
-`STATE = CLAUDE_DIR/token-miser/`:
+`STATE = CLAUDE_DIR/skinflint/`:
 
 | Path | Content | Written by |
 |---|---|---|
@@ -58,8 +58,8 @@ bytes, apart from the platform differences named in section 8. The tests in
   wrote a spill file, when `STATE/spill/` holds more than 60 `.txt` files the
   oldest are deleted until 40 remain.
 
-**Config file**: `$XDG_CONFIG_HOME/token-miser/config.json`, else
-`$HOME/.config/token-miser/config.json` (`%APPDATA%\token-miser\config.json`
+**Config file**: `$XDG_CONFIG_HOME/skinflint/config.json`, else
+`$HOME/.config/skinflint/config.json` (`%APPDATA%\skinflint\config.json`
 on Windows). Keys, all optional:
 
 ```json
@@ -68,30 +68,30 @@ on Windows). Keys, all optional:
 
 Any value of the wrong type is ignored.
 
-**Project config file**: `./.claude/token-miser.json` (`.` is the hook
+**Project config file**: `./.claude/skinflint.json` (`.` is the hook
 process's working directory, the project), same keys. Each valid key in it
 replaces the config file's value for that key, so a project can turn
-token-miser off (`{ "defaultMode": "off" }`) or drop one section.
+skinflint off (`{ "defaultMode": "off" }`) or drop one section.
 
 **Environment**, all optional:
 
 | Variable | Effect |
 |---|---|
-| `TOKEN_MISER_DEFAULT_MODE` | `on` or `off` (any case); beats the config file |
-| `TOKEN_MISER_COMPRESS=0` | PostToolUse does nothing |
-| `TOKEN_MISER_DEDUP=0` | no dedup |
-| `TOKEN_MISER_SPILL=0` | no spill files |
-| `TOKEN_MISER_TOOLS` | comma-separated tool names that replace the default list in 5.1 |
-| `TOKEN_MISER_MAX_BYTES` | elide threshold, default 8000 |
-| `TOKEN_MISER_HEAD_LINES` | default 60 |
-| `TOKEN_MISER_TAIL_LINES` | default 40 |
+| `SKINFLINT_DEFAULT_MODE` | `on` or `off` (any case); beats the config file |
+| `SKINFLINT_COMPRESS=0` | PostToolUse does nothing |
+| `SKINFLINT_DEDUP=0` | no dedup |
+| `SKINFLINT_SPILL=0` | no spill files |
+| `SKINFLINT_TOOLS` | comma-separated tool names that replace the default list in 5.1 |
+| `SKINFLINT_MAX_BYTES` | elide threshold, default 8000 |
+| `SKINFLINT_HEAD_LINES` | default 60 |
+| `SKINFLINT_TAIL_LINES` | default 40 |
 
 A numeric variable is used when it is all ASCII digits, and at most 9 of
 them, with a value above 0; otherwise the default applies.
 
 ## 3. Mode
 
-- **Default mode**: `TOKEN_MISER_DEFAULT_MODE` if valid, else config
+- **Default mode**: `SKINFLINT_DEFAULT_MODE` if valid, else config
   `defaultMode` if it is the string `on` or `off` (any case), else `on`.
 - **Session mode**: the trimmed, lower-cased content of `<sid>.mode` if that
   is `on` or `off`, else the default mode.
@@ -112,15 +112,15 @@ prose.
 
 A tool call that fails (for Bash, a non-zero exit) reaches hooks as
 PostToolUseFailure, not PostToolUse, and that event cannot replace the
-output, so token-miser leaves failed calls as they are. Measured with Claude
+output, so skinflint leaves failed calls as they are. Measured with Claude
 Code 2.1.285: `ls` of a missing path fired only PostToolUseFailure.
 
 ### 4.1 Eligibility
 
 The hook does nothing unless all of these hold:
 
-1. session mode is `on` and `TOKEN_MISER_COMPRESS` is not `0`;
-2. `tool_name` is a string and in the tool list: `TOKEN_MISER_TOOLS` if set
+1. session mode is `on` and `SKINFLINT_COMPRESS` is not `0`;
+2. `tool_name` is a string and in the tool list: `SKINFLINT_TOOLS` if set
    (exact, trimmed names), else `Bash`, `PowerShell`, `Agent`, `WebFetch`,
    `WebSearch`, `Grep`, `Glob`, and any name starting with `mcp__`. `Read`,
    `Edit`, `Write`, `MultiEdit`, `NotebookEdit` and `NotebookRead` are never
@@ -129,8 +129,8 @@ The hook does nothing unless all of these hold:
 4. `tool_response` is not an object with `isImage` true, `interrupted`
    true, or a `persistedOutputPath` member (Claude Code already saved that
    output in full and shows Claude only a short preview of it);
-5. no string value directly inside `tool_input` contains `token-miser/spill`
-   or `token-miser\spill` (reading a spill file back must not be cut again);
+5. no string value directly inside `tool_input` contains `skinflint/spill`
+   or `skinflint\spill` (reading a spill file back must not be cut again);
 6. the response has at least one text slot (4.1.1);
 7. the response, and any object whose members hold slots, has no duplicate
    keys.
@@ -196,7 +196,7 @@ which is never trimmed.
 #### 4.2.2 Exact repeats
 
 A run of 3 or more consecutive identical lines that are not empty becomes the
-first line followed by `[token-miser: line above repeated N more times]`,
+first line followed by `[skinflint: line above repeated N more times]`,
 where N is the run length minus 1.
 
 #### 4.2.3 Timestamp runs
@@ -208,7 +208,7 @@ timestamp is an optional `[`, then
 `Z` or `[+-][0-9]{2}:?[0-9]{2}`, then an optional `]`, then any spaces or
 tabs; each optional part is taken whenever it is present. A run of 3 or more
 consecutive lines that all have a timestamp and equal, non-empty keys becomes:
-the first line, `[token-miser: N more lines like this, differing only in
+the first line, `[skinflint: N more lines like this, differing only in
 timestamp]`, the last line. N is the run length minus 2.
 
 #### 4.2.4 Stack frames
@@ -221,20 +221,20 @@ A *frame* is one of:
   of any of the three kinds.
 
 A run of 8 or more consecutive frames keeps its first 3 and last 2 frames,
-with `[token-miser: N stack frames omitted]` between them.
+with `[skinflint: N stack frames omitted]` between them.
 
 #### 4.2.5 Passing tests
 
 A *pass line* matches one of `^(ok|PASS|PASSED)([ \t:]|$)`,
 `[ \t](ok|PASS|PASSED)$`, `^[ \t]*(PASS|PASSED)[ \t]`, or contains U+2713
 CHECK MARK, and is not an *error line* (4.3). A run of 10 or more
-consecutive pass lines becomes the first, `[token-miser: N more passing
+consecutive pass lines becomes the first, `[skinflint: N more passing
 lines]`, the last. N is the run length minus 2.
 
 #### 4.2.6 Long lines
 
 A line longer than 4096 bytes keeps its first 2048 and last 512 bytes, with
-` [token-miser: N bytes cut from this line] ` (with those surrounding spaces)
+` [skinflint: N bytes cut from this line] ` (with those surrounding spaces)
 between them.
 
 #### 4.2.7 Cut by lines
@@ -245,13 +245,13 @@ block* lines B + 1 to N, and lines A to B are cut. Unless this is a view
 command, 4.2.3 to 4.2.6 are applied to the head block and to the tail block,
 each on its own. The output is the head block, one marker line, the rescued
 lines of 4.3, the tail block. The marker is
-`[token-miser: cut lines A-B of N` + RESCUE + `.` + SAVED + `]`.
+`[skinflint: cut lines A-B of N` + RESCUE + `.` + SAVED + `]`.
 
 #### 4.2.8 Cut by bytes
 
 The original slot is saved to a spill file (4.4). The output is the first
 `floor(MAX / 2)` bytes, then
-`\n[token-miser: cut K bytes from the middle.` + SAVED + `]\n`, then the last
+`\n[skinflint: cut K bytes from the middle.` + SAVED + `]\n`, then the last
 `floor(MAX / 2)` bytes. K is the number of bytes removed.
 
 RESCUE and SAVED:
@@ -283,7 +283,7 @@ its first 300 bytes plus `...`.
 
 ### 4.4 Spill
 
-The spill file is written unless `TOKEN_MISER_SPILL=0`, the payload has no
+The spill file is written unless `SKINFLINT_SPILL=0`, the payload has no
 usable `tool_use_id` (non-empty after sanitising), or the original slot
 matches any of the patterns below, which look like credentials. The file
 holds the original slot bytes exactly. PATH is the absolute path of the
@@ -300,14 +300,14 @@ file, with the platform's separator.
 
 ### 4.5 Dedup
 
-Runs before 4.2, unless `TOKEN_MISER_DEDUP=0`, the session has no valid
+Runs before 4.2, unless `SKINFLINT_DEDUP=0`, the session has no valid
 `<sid>`, or the payload has no usable `tool_use_id`. The *unit* is all slots
 joined with the single byte 0x1E. When the unit is from 2048 to 1048576
 bytes:
 
 - if `<sid>.<tool>.last` holds a different `tool_use_id` and exactly this
   unit, the output is a duplicate. Slot 1 becomes
-  `[token-miser: same output as the previous TOOL call (B bytes, N lines).
+  `[skinflint: same output as the previous TOOL call (B bytes, N lines).
   It starts:]` followed by `\n` and the unit's first 5 lines (each cut as in
   4.3), and every other slot becomes empty;
 - the file is then rewritten with this `tool_use_id` and this unit.
@@ -333,11 +333,11 @@ and one event.
 
 Mode `off`: no output. Otherwise, for source `resume` or `fork`:
 
-    TOKEN-MISER ON (resumed). The rules are already in this conversation; the token-miser skill has them if not.
+    SKINFLINT ON (resumed). The rules are already in this conversation; the skinflint skill has them if not.
 
 For any other source (`startup`, `clear`, `compact`, or unknown), the full
-ruleset: `TOKEN-MISER ON\n\n` followed by the body of
-`skills/token-miser/SKILL.md` after its front matter, with leading
+ruleset: `SKINFLINT ON\n\n` followed by the body of
+`skills/skinflint/SKILL.md` after its front matter, with leading
 whitespace removed. When `prose` is off, every `## ` section whose heading
 starts with `## Prose` is left out; likewise `## Code` when `code` is off.
 A section runs from its heading line to the line before the next line that
@@ -350,21 +350,21 @@ Printed as
 
 The *command form* of `prompt`: lower-cased, trimmed, surrounding backticks
 or quotes removed, one trailing `.` or `!` removed, runs of whitespace
-turned into one space, and `token miser` and `tokenmiser` turned into
-`token-miser`. The prompt is a switch only when the whole command form is
+turned into one space, and `skin flint` and `skin-flint` turned into
+`skinflint`. The prompt is a switch only when the whole command form is
 one of:
 
-- off: `stop token-miser`, `token-miser off`, `token-miser mode off`,
-  `/token-miser off`, `disable token-miser`, `turn off token-miser`,
-  `deactivate token-miser`, `normal mode`
-- on: `/token-miser`, `/token-miser on`, `token-miser on`, `token-miser mode`,
-  `token-miser mode on`, `start token-miser`, `enable token-miser`,
-  `turn on token-miser`, `activate token-miser`, `use token-miser`
+- off: `stop skinflint`, `skinflint off`, `skinflint mode off`,
+  `/skinflint off`, `disable skinflint`, `turn off skinflint`,
+  `deactivate skinflint`, `normal mode`
+- on: `/skinflint`, `/skinflint on`, `skinflint on`, `skinflint mode`,
+  `skinflint mode on`, `start skinflint`, `enable skinflint`,
+  `turn on skinflint`, `activate skinflint`, `use skinflint`
 
 A sentence that merely contains one of these is not a switch. A switch
 writes `<sid>.mode`. Then: when the resulting mode is `off` and this prompt
 switched it, the context is
-`TOKEN-MISER OFF. Write normally until the user turns it back on.`; when the
+`SKINFLINT OFF. Write normally until the user turns it back on.`; when the
 mode is `on`, the context is the reminder line (section 6); otherwise there
 is no output. Printed as
 `{"hookSpecificOutput":{"hookEventName":"UserPromptSubmit","additionalContext":X}}`.
@@ -378,7 +378,7 @@ Mode `off`: no output.
 
 ## 6. Reminder line
 
-`TOKEN-MISER ON.`, then ` Prose: answer first, then only what the user
+`SKINFLINT ON.`, then ` Prose: answer first, then only what the user
 needs to act; for a problem, the likely cause and its fix, not every
 possibility; for a comparison, the pick first, then at most three
 one-sentence reasons; sentences, no headings or bullet lists (number steps
@@ -393,7 +393,7 @@ show code, reply with it and create no file unless the user named one.` when
 ## 7. Failure behaviour
 
 A hook never exits non-zero and never writes to stderr unless
-`TOKEN_MISER_DEBUG=1`. Unreadable input, a parse error, an unexpected shape,
+`SKINFLINT_DEBUG=1`. Unreadable input, a parse error, an unexpected shape,
 an unwritable directory: the hook prints nothing (or only what it had fully
 decided before the failure, never a partial JSON document) and exits 0.
 
@@ -401,7 +401,7 @@ decided before the failure, never a partial JSON document) and exits 0.
 
 | | POSIX (Linux, macOS, BSD, WSL) | Windows |
 |---|---|---|
-| Runs | `sh` + `awk` from the hook line | `token-miser.exe`, compiled on first use with the .NET Framework `csc.exe` that ships with Windows, into `${CLAUDE_PLUGIN_DATA}` |
+| Runs | `sh` + `awk` from the hook line | `skinflint.exe`, compiled on first use with the .NET Framework `csc.exe` that ships with Windows, into `${CLAUDE_PLUGIN_DATA}` |
 | From Git Bash | n/a | the hook line runs the exe directly |
 | From PowerShell | n/a | the hook line loads the exe into the running PowerShell (no second process) |
 | Path separator | `/` | `/` as well: every Windows file API accepts it, so printed paths read the same everywhere. `\` in inherited paths is turned into `/` |

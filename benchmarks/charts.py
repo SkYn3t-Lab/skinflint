@@ -17,7 +17,7 @@ os.makedirs(out, exist_ok=True)
 d = json.load(open(src))
 NAMES = json.loads(os.environ.get('ARM_NAMES', '{}'))
 def name(a): return NAMES.get(a, a)
-ORDER = ['token-miser', 'chisle', 'ponytail', 'caveman']
+ORDER = ['skinflint', 'chisle', 'ponytail', 'caveman']
 plugins = sorted((a for a in d['arms'] if a != 'none'), key=lambda a: ORDER.index(a) if a in ORDER else len(ORDER))
 
 # Categorical slots in fixed order (validated palette, adjacent pairs),
@@ -51,11 +51,11 @@ def overall(mode, t):
     vals = [d['overall'][a]['total_pct'] for a in rows]
     fig, ax = plt.subplots(figsize=(7.2, 2.9), facecolor=t['bg'])
     frame(ax, t)
-    colors = [t['series'][0] if a == 'token-miser' else t['muted'] for a in rows]
+    colors = [t['series'][0] if a == 'skinflint' else t['muted'] for a in rows]
     bars = ax.barh([name(a) for a in rows], vals, color=colors, height=0.62)
     for b, v, a in zip(bars, vals, rows):
         ax.text(v + 1.2, b.get_y() + b.get_height() / 2, '%d%%' % v, va='center', fontsize=10,
-                color=t['ink'], fontweight='bold' if a == 'token-miser' else 'normal')
+                color=t['ink'], fontweight='bold' if a == 'skinflint' else 'normal')
     ax.set_xlim(0, 100)
     ax.set_xticks([0, 25, 50, 75, 100]); ax.set_xticklabels(['0', '25%', '50%', '75%', '100%'])
     ax.tick_params(axis='y', labelsize=10.5, labelcolor=t['ink'])
@@ -70,12 +70,12 @@ def by_group(mode, t):
     fig, ax = plt.subplots(figsize=(7.2, 4.4), facecolor=t['bg'])
     frame(ax, t)
     for i, a in enumerate(plugins):
-        ys = [g - 0.4 + h / 2 + i * h for g in range(len(groups))]   # token-miser on top
+        ys = [g - 0.4 + h / 2 + i * h for g in range(len(groups))]   # skinflint on top
         vals = [d['by_size'][g][a]['total_pct'] for g in groups]
         ax.barh(ys, vals, height=h - 0.03, color=t['series'][i], label=name(a))
         for y, v in zip(ys, vals):
             ax.text(v + 1, y, '%d' % v, va='center', fontsize=8.5, color=t['ink'],
-                    fontweight='bold' if a == 'token-miser' else 'normal')
+                    fontweight='bold' if a == 'skinflint' else 'normal')
     ax.set_yticks(range(len(groups))); ax.set_yticklabels(labels)
     ax.invert_yaxis()
     ax.set_xlim(0, 100)
@@ -125,7 +125,7 @@ def speed(mode, t):
             ms = float(v)
             ax.barh(y, ms, height=h - 0.03, color=t['series'][i], label=name(a) if g == 0 else None)
             ax.text(ms + top * 0.01, y, '%d' % ms, va='center', fontsize=8.5, color=t['ink'],
-                    fontweight='bold' if a == 'token-miser' else 'normal')
+                    fontweight='bold' if a == 'skinflint' else 'normal')
     ax.set_yticks(range(len(rows))); ax.set_yticklabels([r[0] for r in rows])
     ax.invert_yaxis()
     ax.set_xlim(0, top * 1.12)

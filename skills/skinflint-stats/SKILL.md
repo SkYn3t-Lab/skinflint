@@ -1,11 +1,11 @@
 ---
-name: token-miser-stats
+name: skinflint-stats
 description: >
-  Show how much tool output token-miser has trimmed so far. Use for
-  "/token-miser-stats", "token-miser stats" or "how much has token-miser saved".
+  Show how much tool output skinflint has trimmed so far. Use for
+  "/skinflint-stats", "skinflint stats" or "how much has skinflint saved".
 ---
 
-Read the file `token-miser/stats` inside the Claude Code configuration
+Read the file `skinflint/stats` inside the Claude Code configuration
 folder (`$CLAUDE_CONFIG_DIR` if set, otherwise `~/.claude`). It holds two
 lines, `saved <bytes>` and `events <count>`. Do not read any other file there.
 
