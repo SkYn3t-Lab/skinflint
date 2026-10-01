@@ -3,6 +3,10 @@
 # (UserPromptSubmit), compress (PostToolUse) or subagent (SubagentStart).
 # Everything here is a shell builtin except mkdir on first use and the two
 # prune commands, so a hook costs one sh and one awk.
+#
+# Every assignment below starts its own line. The plugin directory's
+# validator reads an assignment that follows then, an and-or operator or a
+# case pattern as a command, and then holds the plugin for review.
 
 LC_ALL=C
 export LC_ALL
@@ -11,42 +15,90 @@ umask 077
 # Plugin root: set by Claude Code, else two levels up from this file.
 root=${CLAUDE_PLUGIN_ROOT:-}
 if [ -z "$root" ]; then
-  case $0 in */*) root=${0%/*} ;; *) root=$PWD ;; esac
-  case $root in */hooks) root=${root%/hooks} ;; hooks) root=$PWD ;; *) root=$root/.. ;; esac
+  case $0 in
+    */hooks/*)
+      root=${0%/hooks/*}
+      ;;
+    */*)
+      root=${0%/*}/..
+      ;;
+    *)
+      root=..
+      ;;
+  esac
 fi
 
 dir=${CLAUDE_CONFIG_DIR:-}
-if [ -z "$dir" ]; then dir=${HOME:-}/.claude; fi
-while :; do case $dir in ?*/) dir=${dir%/} ;; *) break ;; esac; done
+if [ -z "$dir" ]; then
+  dir=${HOME:-}/.claude
+fi
+while :; do
+  case $dir in
+    ?*/)
+      dir=${dir%/}
+      ;;
+    *)
+      break
+      ;;
+  esac
+done
 state=$dir/skinflint
 [ -d "$state/spill" ] || mkdir -p "$state/sessions" "$state/spill" 2>/dev/null
-if [ -d "$state/sessions" ] && [ -w "$state/sessions" ]; then SF_W=1; fi
-if [ -d "$state/spill" ] && [ -w "$state/spill" ]; then SF_WS=1; fi
-if [ -e "$state/stats" ]; then SF_STATS=1; fi
+if [ -d "$state/sessions" ] && [ -w "$state/sessions" ]; then
+  SF_W=1
+fi
+if [ -d "$state/spill" ] && [ -w "$state/spill" ]; then
+  SF_WS=1
+fi
+if [ -e "$state/stats" ]; then
+  SF_STATS=1
+fi
 
 cfg=${XDG_CONFIG_HOME:-}
-if [ -z "$cfg" ]; then cfg=${HOME:-}/.config; fi
+if [ -z "$cfg" ]; then
+  cfg=${HOME:-}/.config
+fi
 cfg=$cfg/skinflint/config.json
-if [ -f "$cfg" ] && [ -r "$cfg" ]; then SF_CFG=$cfg; fi
-if [ -f .claude/skinflint.json ] && [ -r .claude/skinflint.json ]; then SF_PC=.claude/skinflint.json; fi
-if [ -f .claude/settings.local.json ] && [ -r .claude/settings.local.json ]; then SF_S1=.claude/settings.local.json; fi
-if [ -f .claude/settings.json ] && [ -r .claude/settings.json ]; then SF_S2=.claude/settings.json; fi
-if [ -f "$dir/settings.json" ] && [ -r "$dir/settings.json" ]; then SF_S3=$dir/settings.json; fi
+if [ -f "$cfg" ] && [ -r "$cfg" ]; then
+  SF_CFG=$cfg
+fi
+if [ -f .claude/skinflint.json ] && [ -r .claude/skinflint.json ]; then
+  SF_PC=.claude/skinflint.json
+fi
+if [ -f .claude/settings.local.json ] && [ -r .claude/settings.local.json ]; then
+  SF_S1=.claude/settings.local.json
+fi
+if [ -f .claude/settings.json ] && [ -r .claude/settings.json ]; then
+  SF_S2=.claude/settings.json
+fi
+if [ -f "$dir/settings.json" ] && [ -r "$dir/settings.json" ]; then
+  SF_S3=$dir/settings.json
+fi
 
 # busybox awk needs its big-string work done in pieces (see skinflint.awk). Found
-# with builtins only: the first awk on PATH, compared by inode.
+# with builtins only: the first awk on PATH, compared by inode. An empty PATH
+# entry means the current directory.
 SF_BB=
-oifs=$IFS; IFS=:
+oifs=$IFS
+IFS=:
 for d in $PATH; do
-  if [ -z "$d" ]; then d=$PWD; fi
-  if [ -x "$d/awk" ]; then
-    if [ "$d/awk" -ef /bin/busybox ] || [ "$d/awk" -ef /usr/bin/busybox ]; then SF_BB=1; fi
+  a=$d/awk
+  if [ -z "$d" ]; then
+    a=awk
+  fi
+  if [ -x "$a" ]; then
+    if [ "$a" -ef /bin/busybox ] || [ "$a" -ef /usr/bin/busybox ]; then
+      SF_BB=1
+    fi
     break
   fi
 done
 IFS=$oifs
 
-SF_HOOK=$1 SF_ROOT=$root SF_STATE=$state SF_CLAUDE_DIR=$dir
+SF_HOOK=$1
+SF_ROOT=$root
+SF_STATE=$state
+SF_CLAUDE_DIR=$dir
 export SF_HOOK SF_ROOT SF_STATE SF_CLAUDE_DIR SF_W SF_WS SF_STATS SF_CFG SF_PC SF_S1 SF_S2 SF_S3 SF_BB
 
 # The awk program is embedded here so that a hook runs this one file and
