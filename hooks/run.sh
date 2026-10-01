@@ -38,8 +38,9 @@ cfg=$cfg/skinflint/config.json
 SF_BB=
 oifs=$IFS; IFS=:
 for d in $PATH; do
-  if [ -x "${d:-.}/awk" ]; then
-    { [ "${d:-.}/awk" -ef /bin/busybox ] || [ "${d:-.}/awk" -ef /usr/bin/busybox ]; } && SF_BB=1
+  [ -n "$d" ] || d=.
+  if [ -x "$d/awk" ]; then
+    { [ "$d/awk" -ef /bin/busybox ] || [ "$d/awk" -ef /usr/bin/busybox ]; } && SF_BB=1
     break
   fi
 done
@@ -51,7 +52,7 @@ export SF_HOOK SF_ROOT SF_STATE SF_CLAUDE_DIR SF_W SF_WS SF_STATS SF_CFG SF_PC S
 # The awk program is embedded here so that a hook runs this one file and
 # nothing else. tools/stamp.sh writes the block from hooks/lib/skinflint.awk:
 # edit that file, never this block.
-# >>> skinflint.awk
+# BEGIN skinflint.awk
 prog='# skinflint hooks in POSIX awk (mawk, gawk, BWK awk, busybox awk).
 # hooks/run.sh runs this with LC_ALL=C, so every string operation is on bytes.
 # Section numbers refer to SPEC.md, which this file implements.
@@ -981,7 +982,7 @@ function add_stats(saved,   p, raw, s, e) {
   writefile(p, sprintf("saved %.0f\nevents %.0f\n", s + saved, e + 1))
 }
 '
-# <<< skinflint.awk
+# END skinflint.awk
 
 if [ "${SKINFLINT_DEBUG:-}" = 1 ]; then awk "$prog"
 else awk "$prog" 2>/dev/null; fi

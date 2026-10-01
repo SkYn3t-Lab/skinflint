@@ -102,11 +102,11 @@ sed "s/skinflint-[A-Za-z0-9]*\\.exe'/skinflint-$id.exe'/" hooks/win/run.ps1 > "$
 # argument; split the program if it ever grows past that.
 [ "$(wc -c < hooks/lib/skinflint.awk)" -lt 120000 ] || { echo "skinflint.awk is too large to embed as one argument" >&2; exit 1; }
 {
-  sed -n '1,/^# >>> skinflint\.awk$/p' hooks/run.sh
+  sed -n '1,/^# BEGIN skinflint\.awk$/p' hooks/run.sh
   printf "prog='"
   sed "s/'/'\\\\''/g" hooks/lib/skinflint.awk
   printf "'\n"
-  sed -n '/^# <<< skinflint\.awk$/,$p' hooks/run.sh
+  sed -n '/^# END skinflint\.awk$/,$p' hooks/run.sh
 } > "$tmp.sh"
 
 if [ "${1:-}" = --check ]; then
