@@ -227,7 +227,7 @@ case('4.2-powershell-view-pipe', 'compress', pwsh(lines(250, 'line {i}: text wit
 # ---------- 4.4 spill ----------
 case('4.4-credential', 'compress', bash(lines(300) + '\nexport API_KEY="abcd1234efgh"\n' + lines(300)))
 case('4.4-private-key', 'compress', bash('-----BEGIN OPENSSH PRIVATE KEY-----\n' + lines(400)))
-case('4.4-github-token', 'compress', bash(lines(200) + '\ntoken ghp_' + 'A1b2' * 9 + '\n' + lines(200)))
+case('4.4-github-token', 'compress', bash(lines(200) + '\ntoken ghp_' + 'x' * 36 + '\n' + lines(200)))
 case('4.4-bearer', 'compress', bash(lines(200) + '\nAuthorization: Bearer abcdefghijklmnopqrstuv\n' + lines(200)))
 case('4.4-spill-off', 'compress', bash(lines(400)), env={'TOKEN_MISER_SPILL': '0'})
 case('4.4-no-tool-use-id', 'compress', bash(lines(400), tuid=None))
