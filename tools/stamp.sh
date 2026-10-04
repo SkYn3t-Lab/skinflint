@@ -51,7 +51,7 @@ trap 'rm -f "$tmp" "$tmp.ps1" "$tmp.sh"' EXIT
 cat > "$tmp" <<EOF
 {
   "name": "skinflint",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Short answers, minimal code and shorter tool output for Claude Code, with nothing to install: POSIX sh and awk on Linux and macOS, a self-built exe on Windows.",
   "author": {
     "name": "Gr3yF0x87",
@@ -93,6 +93,13 @@ cat > "$tmp" <<EOF
         "matcher": "Bash|PowerShell|Agent|WebFetch|WebSearch|Grep|Glob|mcp__.*",
         "hooks": [
           { "type": "command", "command": "$(json compress)", "timeout": 30 }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          { "type": "command", "command": "$(json stop)", "timeout": 30 }
         ]
       }
     ]

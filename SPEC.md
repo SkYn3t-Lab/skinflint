@@ -39,7 +39,7 @@ the [skinflint-tests](https://github.com/SkYn3t-Lab/skinflint-tests) repository,
 | `STATE/sessions/<sid>.mode` | `on` or `off`, nothing else | UserPromptSubmit, on a switch |
 | `STATE/sessions/<sid>.<tool>.last` | `<tool_use_id>`, `\n`, then the previous unit (4.5) | PostToolUse, dedup |
 | `STATE/spill/<tool>-<tool_use_id>-<slot>.txt` | one full original text slot | PostToolUse, elide |
-| `STATE/stats` | `saved <bytes>\nevents <count>\n` | PostToolUse, after any change |
+| `STATE/stats` | five counters, one per line (2.1) | every hook that changes one |
 
 - `<sid>` is `session_id` from the payload. It is used only when it matches
   `^[A-Za-z0-9_-]{1,128}$`; otherwise the session has no state (mode is the
@@ -57,6 +57,36 @@ the [skinflint-tests](https://github.com/SkYn3t-Lab/skinflint-tests) repository,
   `STATE/sessions/` older than 7 days are deleted. After a PostToolUse that
   wrote a spill file, when `STATE/spill/` holds more than 60 `.txt` files the
   oldest are deleted until 40 remain.
+
+### 2.1 Stats
+
+`STATE/stats` holds exactly these five lines, each a name, one space and a
+decimal count:
+
+    saved <bytes>
+    events <count>
+    reply <bytes>
+    replies <count>
+    injected <bytes>
+
+- `saved` and `events`: bytes removed from tool output and how many tool
+  results were changed (4.6).
+- `reply` and `replies`: bytes of final replies written while the mode was
+  `on`, and how many (5.4).
+- `injected`: bytes of context the plugin itself added, the text X of every
+  `additionalContext` printed by 5.1, 5.2 and 5.3.
+
+A hook adds to the counters it names and rewrites the file. A file holding
+only the first two lines, as written before the other three existed, is read
+with those three at 0. A missing file starts all five at 0. Any other content
+is left unchanged and nothing is added.
+
+The first, second and fifth are measured. What the plugin saved on replies
+cannot be measured, because nothing records the reply Claude would have
+written without it; readers of this file (the stats skill and the status
+line) estimate it as `reply * 51 / 49`, from the benchmark in which replies
+with the plugin were 49% of the length of replies without it, and say that it
+is an estimate.
 
 **Config file**: `$XDG_CONFIG_HOME/skinflint/config.json`, else
 `$HOME/.config/skinflint/config.json` (`%APPDATA%\skinflint\config.json`
@@ -324,8 +354,8 @@ least 64. Then the hook prints
 where R is the response rebuilt: a string response is re-encoded; an object
 or array is written with the same members and elements in the same order,
 every rewritten slot re-encoded, and every other value copied as its exact
-original JSON text. Keys are re-encoded. `STATE/stats` gains the bytes saved
-and one event.
+original JSON text. Keys are re-encoded. In `STATE/stats`, `saved` gains the
+bytes saved and `events` gains 1.
 
 ## 5. The other hooks
 
@@ -375,6 +405,12 @@ Mode `on`: the reminder line followed by
 ` You are a subagent: write your final report the same way.`, printed as
 `{"hookSpecificOutput":{"hookEventName":"SubagentStart","additionalContext":X}}`.
 Mode `off`: no output.
+
+### 5.4 Stop
+
+Never prints anything. Mode `on` and `last_assistant_message` a non-empty
+string: in `STATE/stats`, `reply` gains the bytes of that string and
+`replies` gains 1. The text itself is not kept.
 
 ## 6. Reminder line
 

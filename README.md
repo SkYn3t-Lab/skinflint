@@ -195,13 +195,15 @@ and every MCP tool:
 
 ### Extras
 
-- `/skinflint-stats` shows how much tool output has been trimmed so far.
+- `/skinflint-stats` shows everything saved so far: tool output trimmed, the
+  estimated saving on replies, and what the plugin itself adds, with the net.
 - `/skinflint-debt` lists every shortcut marked with a `skinflint:`
   comment, with when it would be worth doing properly.
 - `/skinflint-review` reviews your diff for code that can be deleted.
 - `/skinflint-audit` ranks everything removable in a file, diff or repo, code
   and prose, biggest first.
-- A status line showing the mode and roughly how many tokens have been saved.
+- A status line showing the mode and roughly how many tokens have been saved,
+  net of what the plugin adds.
 
 ## How it compares
 
@@ -289,7 +291,7 @@ well. Either one alone switches skinflint off.
 |---|---|
 | `/skinflint`, `skinflint on` | Turn it on for this session |
 | `stop skinflint`, `normal mode`, `/skinflint off` | Turn it off for this session |
-| `/skinflint-stats` | How much tool output has been trimmed so far |
+| `/skinflint-stats` | Everything saved so far: tool output, replies (estimated) and the plugin's own cost |
 | `/skinflint-debt` | List every shortcut marked with a `skinflint:` comment |
 | `/skinflint-review` | Review the current diff for code that can be removed |
 | `/skinflint-audit [path]` | Rank everything removable, code and prose, biggest first |
@@ -329,7 +331,8 @@ If you use a custom output style, the prose rules step aside for it.
 
 **Status line** (optional): `sh "<plugin>/hooks/statusline.sh"`, or on Windows
 `powershell -NoProfile -ExecutionPolicy Bypass -File "<plugin>\hooks\win\statusline.ps1"`.
-It shows the mode and roughly how many tokens have been saved.
+It shows the mode and roughly how many tokens have been saved, net of what the
+plugin adds; the saving on replies in that figure is an estimate.
 
 State lives in `~/.claude/skinflint/`: per-session mode, the last output of
 each tool for the duplicate check, saved full texts (the newest 40 are kept)

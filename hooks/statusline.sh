@@ -17,13 +17,17 @@ if [ "$mode" != on ] && [ "$mode" != off ]; then
   [ "$mode" = off ] || mode=on
 fi
 
+# Net of everything: tool output trimmed, plus the estimated saving on
+# replies (reply * 51 / 49, SPEC.md 2.1), minus what the plugin injected.
 saved=
 if [ -f "$dir/stats" ] && [ ! -L "$dir/stats" ]; then
   saved=$(sed -n 's/^saved \([0-9]\{1,15\}\)$/\1/p' "$dir/stats" | head -n 1)
+  reply=$(sed -n 's/^reply \([0-9]\{1,15\}\)$/\1/p' "$dir/stats" | head -n 1)
+  inj=$(sed -n 's/^injected \([0-9]\{1,15\}\)$/\1/p' "$dir/stats" | head -n 1)
 fi
 extra=
 if [ -n "$saved" ]; then
-  tok=$((saved / 4))
+  tok=$(((saved + ${reply:-0} * 51 / 49 - ${inj:-0}) / 4))
   if [ "$tok" -ge 1000000 ]; then extra=" saved ~$((tok / 1000000))M tok"
   elif [ "$tok" -ge 1000 ]; then extra=" saved ~$((tok / 1000))k tok"
   elif [ "$tok" -gt 0 ]; then extra=" saved ~$tok tok"; fi

@@ -6,7 +6,7 @@
 $sfHook = $args[0]
 $sfData = $env:CLAUDE_PLUGIN_DATA
 if (-not $sfData) { $sfData = $env:LOCALAPPDATA + '\skinflint' }
-$sfExe = $sfData + '\skinflint-ad32940134d2.exe'
+$sfExe = $sfData + '\skinflint-f79d94a7c5e7.exe'
 if (-not [IO.File]::Exists($sfExe)) {
   $sfCsc = Join-Path $env:WINDIR 'Microsoft.NET\Framework64\v4.0.30319\csc.exe'
   if (-not [IO.File]::Exists($sfCsc)) { $sfCsc = Join-Path $env:WINDIR 'Microsoft.NET\Framework\v4.0.30319\csc.exe' }

@@ -76,6 +76,7 @@ public static class Hook {
     if (hook == "prompt") return Prompt();
     if (hook == "subagent") return Subagent();
     if (hook == "compress") return Compress();
+    if (hook == "stop") return Stop();
     return "";
   }
 
@@ -306,6 +307,7 @@ public static class Hook {
   }
 
   static string Ctx(string ev, string text) {
+    AddStats(0, 0, 0, 0, text.Length);
     return "{\"hookSpecificOutput\":{\"hookEventName\":\"" + ev + "\",\"additionalContext\":" + JsonStr(text) + "}}";
   }
 
@@ -512,6 +514,15 @@ public static class Hook {
     return Mode == "on" ? Ctx("SubagentStart", Reminder() + " You are a subagent: write your final report the same way.") : "";
   }
 
+  // ---------- Stop (5.4) ----------
+
+  static string Stop() {
+    if (Mode != "on") return "";
+    string m = JStr(Root, "last_assistant_message");
+    if (m != "") AddStats(0, 0, m.Length, 1, 0);
+    return "";
+  }
+
   // ---------- PostToolUse (4) ----------
 
   static string Compress() {
@@ -550,7 +561,7 @@ public static class Hook {
     if (saved >= 64) {
       for (int k = 0; k < NS; k++) NewOf[Slot[k]] = nw[k];
       outp = "{\"hookSpecificOutput\":{\"hookEventName\":\"PostToolUse\",\"updatedToolOutput\":" + Emit(resp) + "}}";
-      AddStats(saved);
+      AddStats(saved, 1, 0, 0, 0);
     }
     if (Spilled) PruneSpill();
     return outp;
@@ -899,17 +910,22 @@ public static class Hook {
 
   // ---------- stats (2) ----------
 
-  static Regex _StatsRe; static Regex StatsRe { get { return _StatsRe ?? (_StatsRe = new Regex(@"^saved ([0-9]+)\nevents ([0-9]+)\n\z", O)); } }
+  static Regex _StatsRe; static Regex StatsRe { get { return _StatsRe ?? (_StatsRe = new Regex(@"^saved ([0-9]+)\nevents ([0-9]+)\n(reply ([0-9]+)\nreplies ([0-9]+)\ninjected ([0-9]+)\n)?\z", O)); } }
 
-  static void AddStats(long saved) {
+  // Adds to the five counters. A file written before the reply and injected
+  // counters existed holds only the first two lines.
+  static void AddStats(long ds, long de, long dr, long dn, long di) {
     if (!CanWrite) return;
     string p = State + "/stats";
-    long s = 0, e = 0;
+    long[] v = new long[5];
     if (File.Exists(p)) {
       Match m = StatsRe.Match(ReadFile(p) ?? "");
-      if (!m.Success || !long.TryParse(m.Groups[1].Value, out s) || !long.TryParse(m.Groups[2].Value, out e)) return;
+      if (!m.Success) return;
+      int[] g = { 1, 2, 4, 5, 6 };
+      for (int i = 0; i < 5; i++)
+        if (m.Groups[g[i]].Success && !long.TryParse(m.Groups[g[i]].Value, out v[i])) return;
     }
-    WriteFile(p, "saved " + (s + saved) + "\nevents " + (e + 1) + "\n");
+    WriteFile(p, "saved " + (v[0] + ds) + "\nevents " + (v[1] + de) + "\nreply " + (v[2] + dr) + "\nreplies " + (v[3] + dn) + "\ninjected " + (v[4] + di) + "\n");
   }
 }
 }

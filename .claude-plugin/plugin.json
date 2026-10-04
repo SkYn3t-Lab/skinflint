@@ -1,6 +1,6 @@
 {
   "name": "skinflint",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Short answers, minimal code and shorter tool output for Claude Code, with nothing to install: POSIX sh and awk on Linux and macOS, a self-built exe on Windows.",
   "author": {
     "name": "Gr3yF0x87",
@@ -19,21 +19,21 @@
       {
         "matcher": "startup|resume|clear|compact|fork",
         "hooks": [
-          { "type": "command", "command": "{ true \"\\\" <# \"; } >/dev/null\n[ -f \"${CLAUDE_PLUGIN_DATA}/skinflint-ad32940134d2.exe\" ] && exec \"${CLAUDE_PLUGIN_DATA}/skinflint-ad32940134d2.exe\" activate\ncase ${OSTYPE:-} in msys*|cygwin*) exec powershell -NoProfile -ExecutionPolicy Bypass -File \"${CLAUDE_PLUGIN_ROOT}/hooks/win/run.ps1\" activate ;; esac\nexec sh \"${CLAUDE_PLUGIN_ROOT}/hooks/run.sh\" activate\n#> } > $null\nif ([IO.File]::Exists(\"${CLAUDE_PLUGIN_DATA}/skinflint-ad32940134d2.exe\")) { [void][Reflection.Assembly]::LoadFile(\"${CLAUDE_PLUGIN_DATA}/skinflint-ad32940134d2.exe\"); [void][Skinflint.Hook]::Main([string[]]@(\"activate\")); break }\npowershell -NoProfile -ExecutionPolicy Bypass -File \"${CLAUDE_PLUGIN_ROOT}/hooks/win/run.ps1\" activate", "timeout": 30, "statusMessage": "Loading skinflint..." }
+          { "type": "command", "command": "{ true \"\\\" <# \"; } >/dev/null\n[ -f \"${CLAUDE_PLUGIN_DATA}/skinflint-f79d94a7c5e7.exe\" ] && exec \"${CLAUDE_PLUGIN_DATA}/skinflint-f79d94a7c5e7.exe\" activate\ncase ${OSTYPE:-} in msys*|cygwin*) exec powershell -NoProfile -ExecutionPolicy Bypass -File \"${CLAUDE_PLUGIN_ROOT}/hooks/win/run.ps1\" activate ;; esac\nexec sh \"${CLAUDE_PLUGIN_ROOT}/hooks/run.sh\" activate\n#> } > $null\nif ([IO.File]::Exists(\"${CLAUDE_PLUGIN_DATA}/skinflint-f79d94a7c5e7.exe\")) { [void][Reflection.Assembly]::LoadFile(\"${CLAUDE_PLUGIN_DATA}/skinflint-f79d94a7c5e7.exe\"); [void][Skinflint.Hook]::Main([string[]]@(\"activate\")); break }\npowershell -NoProfile -ExecutionPolicy Bypass -File \"${CLAUDE_PLUGIN_ROOT}/hooks/win/run.ps1\" activate", "timeout": 30, "statusMessage": "Loading skinflint..." }
         ]
       }
     ],
     "UserPromptSubmit": [
       {
         "hooks": [
-          { "type": "command", "command": "{ true \"\\\" <# \"; } >/dev/null\n[ -f \"${CLAUDE_PLUGIN_DATA}/skinflint-ad32940134d2.exe\" ] && exec \"${CLAUDE_PLUGIN_DATA}/skinflint-ad32940134d2.exe\" prompt\ncase ${OSTYPE:-} in msys*|cygwin*) exec powershell -NoProfile -ExecutionPolicy Bypass -File \"${CLAUDE_PLUGIN_ROOT}/hooks/win/run.ps1\" prompt ;; esac\nexec sh \"${CLAUDE_PLUGIN_ROOT}/hooks/run.sh\" prompt\n#> } > $null\nif ([IO.File]::Exists(\"${CLAUDE_PLUGIN_DATA}/skinflint-ad32940134d2.exe\")) { [void][Reflection.Assembly]::LoadFile(\"${CLAUDE_PLUGIN_DATA}/skinflint-ad32940134d2.exe\"); [void][Skinflint.Hook]::Main([string[]]@(\"prompt\")); break }\npowershell -NoProfile -ExecutionPolicy Bypass -File \"${CLAUDE_PLUGIN_ROOT}/hooks/win/run.ps1\" prompt", "timeout": 30 }
+          { "type": "command", "command": "{ true \"\\\" <# \"; } >/dev/null\n[ -f \"${CLAUDE_PLUGIN_DATA}/skinflint-f79d94a7c5e7.exe\" ] && exec \"${CLAUDE_PLUGIN_DATA}/skinflint-f79d94a7c5e7.exe\" prompt\ncase ${OSTYPE:-} in msys*|cygwin*) exec powershell -NoProfile -ExecutionPolicy Bypass -File \"${CLAUDE_PLUGIN_ROOT}/hooks/win/run.ps1\" prompt ;; esac\nexec sh \"${CLAUDE_PLUGIN_ROOT}/hooks/run.sh\" prompt\n#> } > $null\nif ([IO.File]::Exists(\"${CLAUDE_PLUGIN_DATA}/skinflint-f79d94a7c5e7.exe\")) { [void][Reflection.Assembly]::LoadFile(\"${CLAUDE_PLUGIN_DATA}/skinflint-f79d94a7c5e7.exe\"); [void][Skinflint.Hook]::Main([string[]]@(\"prompt\")); break }\npowershell -NoProfile -ExecutionPolicy Bypass -File \"${CLAUDE_PLUGIN_ROOT}/hooks/win/run.ps1\" prompt", "timeout": 30 }
         ]
       }
     ],
     "SubagentStart": [
       {
         "hooks": [
-          { "type": "command", "command": "{ true \"\\\" <# \"; } >/dev/null\n[ -f \"${CLAUDE_PLUGIN_DATA}/skinflint-ad32940134d2.exe\" ] && exec \"${CLAUDE_PLUGIN_DATA}/skinflint-ad32940134d2.exe\" subagent\ncase ${OSTYPE:-} in msys*|cygwin*) exec powershell -NoProfile -ExecutionPolicy Bypass -File \"${CLAUDE_PLUGIN_ROOT}/hooks/win/run.ps1\" subagent ;; esac\nexec sh \"${CLAUDE_PLUGIN_ROOT}/hooks/run.sh\" subagent\n#> } > $null\nif ([IO.File]::Exists(\"${CLAUDE_PLUGIN_DATA}/skinflint-ad32940134d2.exe\")) { [void][Reflection.Assembly]::LoadFile(\"${CLAUDE_PLUGIN_DATA}/skinflint-ad32940134d2.exe\"); [void][Skinflint.Hook]::Main([string[]]@(\"subagent\")); break }\npowershell -NoProfile -ExecutionPolicy Bypass -File \"${CLAUDE_PLUGIN_ROOT}/hooks/win/run.ps1\" subagent", "timeout": 30 }
+          { "type": "command", "command": "{ true \"\\\" <# \"; } >/dev/null\n[ -f \"${CLAUDE_PLUGIN_DATA}/skinflint-f79d94a7c5e7.exe\" ] && exec \"${CLAUDE_PLUGIN_DATA}/skinflint-f79d94a7c5e7.exe\" subagent\ncase ${OSTYPE:-} in msys*|cygwin*) exec powershell -NoProfile -ExecutionPolicy Bypass -File \"${CLAUDE_PLUGIN_ROOT}/hooks/win/run.ps1\" subagent ;; esac\nexec sh \"${CLAUDE_PLUGIN_ROOT}/hooks/run.sh\" subagent\n#> } > $null\nif ([IO.File]::Exists(\"${CLAUDE_PLUGIN_DATA}/skinflint-f79d94a7c5e7.exe\")) { [void][Reflection.Assembly]::LoadFile(\"${CLAUDE_PLUGIN_DATA}/skinflint-f79d94a7c5e7.exe\"); [void][Skinflint.Hook]::Main([string[]]@(\"subagent\")); break }\npowershell -NoProfile -ExecutionPolicy Bypass -File \"${CLAUDE_PLUGIN_ROOT}/hooks/win/run.ps1\" subagent", "timeout": 30 }
         ]
       }
     ],
@@ -41,7 +41,14 @@
       {
         "matcher": "Bash|PowerShell|Agent|WebFetch|WebSearch|Grep|Glob|mcp__.*",
         "hooks": [
-          { "type": "command", "command": "{ true \"\\\" <# \"; } >/dev/null\n[ -f \"${CLAUDE_PLUGIN_DATA}/skinflint-ad32940134d2.exe\" ] && exec \"${CLAUDE_PLUGIN_DATA}/skinflint-ad32940134d2.exe\" compress\ncase ${OSTYPE:-} in msys*|cygwin*) exec powershell -NoProfile -ExecutionPolicy Bypass -File \"${CLAUDE_PLUGIN_ROOT}/hooks/win/run.ps1\" compress ;; esac\nexec sh \"${CLAUDE_PLUGIN_ROOT}/hooks/run.sh\" compress\n#> } > $null\nif ([IO.File]::Exists(\"${CLAUDE_PLUGIN_DATA}/skinflint-ad32940134d2.exe\")) { [void][Reflection.Assembly]::LoadFile(\"${CLAUDE_PLUGIN_DATA}/skinflint-ad32940134d2.exe\"); [void][Skinflint.Hook]::Main([string[]]@(\"compress\")); break }\npowershell -NoProfile -ExecutionPolicy Bypass -File \"${CLAUDE_PLUGIN_ROOT}/hooks/win/run.ps1\" compress", "timeout": 30 }
+          { "type": "command", "command": "{ true \"\\\" <# \"; } >/dev/null\n[ -f \"${CLAUDE_PLUGIN_DATA}/skinflint-f79d94a7c5e7.exe\" ] && exec \"${CLAUDE_PLUGIN_DATA}/skinflint-f79d94a7c5e7.exe\" compress\ncase ${OSTYPE:-} in msys*|cygwin*) exec powershell -NoProfile -ExecutionPolicy Bypass -File \"${CLAUDE_PLUGIN_ROOT}/hooks/win/run.ps1\" compress ;; esac\nexec sh \"${CLAUDE_PLUGIN_ROOT}/hooks/run.sh\" compress\n#> } > $null\nif ([IO.File]::Exists(\"${CLAUDE_PLUGIN_DATA}/skinflint-f79d94a7c5e7.exe\")) { [void][Reflection.Assembly]::LoadFile(\"${CLAUDE_PLUGIN_DATA}/skinflint-f79d94a7c5e7.exe\"); [void][Skinflint.Hook]::Main([string[]]@(\"compress\")); break }\npowershell -NoProfile -ExecutionPolicy Bypass -File \"${CLAUDE_PLUGIN_ROOT}/hooks/win/run.ps1\" compress", "timeout": 30 }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          { "type": "command", "command": "{ true \"\\\" <# \"; } >/dev/null\n[ -f \"${CLAUDE_PLUGIN_DATA}/skinflint-f79d94a7c5e7.exe\" ] && exec \"${CLAUDE_PLUGIN_DATA}/skinflint-f79d94a7c5e7.exe\" stop\ncase ${OSTYPE:-} in msys*|cygwin*) exec powershell -NoProfile -ExecutionPolicy Bypass -File \"${CLAUDE_PLUGIN_ROOT}/hooks/win/run.ps1\" stop ;; esac\nexec sh \"${CLAUDE_PLUGIN_ROOT}/hooks/run.sh\" stop\n#> } > $null\nif ([IO.File]::Exists(\"${CLAUDE_PLUGIN_DATA}/skinflint-f79d94a7c5e7.exe\")) { [void][Reflection.Assembly]::LoadFile(\"${CLAUDE_PLUGIN_DATA}/skinflint-f79d94a7c5e7.exe\"); [void][Skinflint.Hook]::Main([string[]]@(\"stop\")); break }\npowershell -NoProfile -ExecutionPolicy Bypass -File \"${CLAUDE_PLUGIN_ROOT}/hooks/win/run.ps1\" stop", "timeout": 30 }
         ]
       }
     ]

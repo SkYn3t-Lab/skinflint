@@ -17,6 +17,7 @@ BEGIN {
   if (HOOK == "prompt") exit hook_prompt()
   if (HOOK == "subagent") exit hook_subagent()
   if (HOOK == "compress") exit hook_compress()
+  if (HOOK == "stop") exit hook_stop()
   exit 0
 }
 
@@ -410,6 +411,7 @@ function num(v, fb) {
 }
 
 function ctx(event, text) {
+  add_stats(0, 0, 0, 0, length(text))
   return "{\"hookSpecificOutput\":{\"hookEventName\":\"" event "\",\"additionalContext\":" json_str(text) "}}"
 }
 
@@ -554,6 +556,15 @@ function hook_subagent() {
   return 0
 }
 
+# ---------- Stop (5.4) ----------
+
+function hook_stop(   m) {
+  if (MODE != "on") return 0
+  m = jstr(ROOT, "last_assistant_message")
+  if (m != "") add_stats(0, 0, length(m), 1, 0)
+  return 0
+}
+
 # ---------- PostToolUse (4) ----------
 
 function hook_compress(   tool, resp, ti, i, v, k, unit, total, saved, dup, rc, nuls) {
@@ -596,7 +607,7 @@ function hook_compress(   tool, resp, ti, i, v, k, unit, total, saved, dup, rc, 
   if (saved < 64) return SPILLED ? 3 : 0
   for (k = 1; k <= NS; k++) NEWOF[SLOT[k]] = NEW[k]
   printf "%s", "{\"hookSpecificOutput\":{\"hookEventName\":\"PostToolUse\",\"updatedToolOutput\":" emit(resp) "}}"
-  add_stats(saved)
+  add_stats(saved, 1, 0, 0, 0)
   return SPILLED ? 3 : 0
 }
 
@@ -914,15 +925,17 @@ function spill(orig, slot,   p, lo) {
 
 # ---------- stats (2) ----------
 
-function add_stats(saved,   p, raw, s, e) {
+# Adds to the five counters. A file written before the reply and injected
+# counters existed holds only the first two lines.
+function add_stats(ds, de, dr, dn, di,   p, raw, L) {
   if (!CAN_WRITE) return
   p = STATE "/stats"
-  s = 0; e = 0
+  L[1] = 0
   if (ENVIRON["SF_STATS"] == "1") {
     raw = readfile(p)
-    if (raw !~ /^saved [0-9]+\nevents [0-9]+\n$/) return
-    s = raw; sub(/^saved /, "", s); sub(/\n.*/, "", s)
-    e = raw; sub(/^[^\n]*\nevents /, "", e); sub(/\n$/, "", e)
+    if (raw !~ /^saved [0-9]+\nevents [0-9]+\n(reply [0-9]+\nreplies [0-9]+\ninjected [0-9]+\n)?$/) return
+    gsub(/[a-z]+ /, "", raw)
+    split(raw, L, "\n")
   }
-  writefile(p, sprintf("saved %.0f\nevents %.0f\n", s + saved, e + 1))
+  writefile(p, sprintf("saved %.0f\nevents %.0f\nreply %.0f\nreplies %.0f\ninjected %.0f\n", L[1] + ds, L[2] + de, L[3] + dr, L[4] + dn, L[5] + di))
 }

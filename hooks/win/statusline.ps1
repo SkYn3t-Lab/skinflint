@@ -20,10 +20,17 @@ if ($mode -ne 'on' -and $mode -ne 'off') {
 $extra = ''
 $s = Join-Path $dir 'stats'
 if ([IO.File]::Exists($s)) {
-  $m = [regex]::Match([IO.File]::ReadAllText($s), '(?m)^saved ([0-9]{1,15})$')
+  # Net of everything: tool output trimmed, plus the estimated saving on
+  # replies (reply * 51 / 49, SPEC.md 2.1), minus what the plugin injected.
+  $t = [IO.File]::ReadAllText($s)
+  $m = [regex]::Match($t, '(?m)^saved ([0-9]{1,15})$')
   if ($m.Success) {
-    $tok = [long]$m.Groups[1].Value / 4
-    $tok = [math]::Floor($tok)
+    $reply = [long]0; $inj = [long]0
+    $r = [regex]::Match($t, '(?m)^reply ([0-9]{1,15})$')
+    if ($r.Success) { $reply = [long]$r.Groups[1].Value }
+    $r = [regex]::Match($t, '(?m)^injected ([0-9]{1,15})$')
+    if ($r.Success) { $inj = [long]$r.Groups[1].Value }
+    $tok = [math]::Floor(([long]$m.Groups[1].Value + [math]::Floor($reply * 51 / 49) - $inj) / 4)
     if ($tok -ge 1000000) { $extra = ' saved ~' + [math]::Floor($tok / 1000000) + 'M tok' }
     elseif ($tok -ge 1000) { $extra = ' saved ~' + [math]::Floor($tok / 1000) + 'k tok' }
     elseif ($tok -gt 0) { $extra = ' saved ~' + $tok + ' tok' }
