@@ -205,6 +205,31 @@ and every MCP tool:
 - A status line showing the mode and roughly how many tokens have been saved,
   net of what the plugin adds.
 
+### Seeing what it saves
+
+The hooks keep five counters in one small file, and `/skinflint-stats` turns
+them into four figures:
+
+| Figure | Where it comes from |
+|---|---|
+| Tool output trimmed | Measured: the bytes removed from tool results, and how many results were shortened |
+| Replies | Estimated: the bytes of the replies Claude actually wrote, times 51/49 |
+| Cost of the plugin | Measured: the bytes of rules and reminders skinflint itself added to your conversations |
+| Net | The first two minus the third |
+
+Only the reply figure is an estimate. The benchmark below ran the same tasks
+with and without the plugin, and with it Claude wrote 49% of the output; in
+your own sessions each prompt is answered once, with the plugin on, so there
+is no second reply to compare, and that measured ratio is applied to what was
+written. The plugin counts the length of each final reply and keeps none of
+its text.
+
+The net can be small or negative in a short session, because the ruleset is
+added once per session and the reminder once per prompt whatever the replies
+come to. Bytes also understate the money side: trimmed tool output and the
+plugin's own text are input, while replies are output, which costs several
+times more per token.
+
 ## How it compares
 
 Measured in the benchmarks below, or read from each plugin's own code:
