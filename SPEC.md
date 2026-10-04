@@ -362,17 +362,10 @@ bytes saved and `events` gains 1.
 
 ### 5.1 SessionStart
 
-Mode `off`: no output. Otherwise, for source `resume` or `fork`:
-
-    SKINFLINT ON (resumed). The rules are already in this conversation; the skinflint skill has them if not.
-
-For any other source (`startup`, `clear`, `compact`, or unknown), the full
-ruleset: `SKINFLINT ON\n\n` followed by the body of
-`skills/skinflint/SKILL.md` after its front matter, with leading
-whitespace removed. When `prose` is off, every `## ` section whose heading
-starts with `## Prose` is left out; likewise `## Code` when `code` is off.
-A section runs from its heading line to the line before the next line that
-starts with `## `.
+Mode `off`: no output. Otherwise, for every source, the one line
+`SKINFLINT ON.`. The rules themselves reach the conversation as the reminder
+line (section 6) with each prompt; the full text in
+`skills/skinflint/SKILL.md` is read only when the skill is invoked.
 
 Printed as
 `{"hookSpecificOutput":{"hookEventName":"SessionStart","additionalContext":X}}`.

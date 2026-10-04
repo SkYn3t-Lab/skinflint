@@ -439,11 +439,7 @@ public static class Hook {
     string src = JStr(Root, "source");
     if (src == "startup") PruneSessions();
     if (Mode == "off") return "";
-    if (src == "resume" || src == "fork")
-      return Ctx("SessionStart", UP + " ON (resumed). The rules are already in this conversation; the skinflint skill has them if not.");
-    Sections();
-    string body = Ruleset(ReadFile(Plugin + "/skills/skinflint/SKILL.md") ?? "");
-    return Ctx("SessionStart", UP + " ON\n\n" + body);
+    return Ctx("SessionStart", UP + " ON.");
   }
 
   static void PruneSessions() {
@@ -452,27 +448,6 @@ public static class Hook {
       foreach (FileInfo f in new DirectoryInfo(Sess).GetFiles())
         if (Math.Floor((now - f.LastWriteTimeUtc).TotalDays) > 7) try { f.Delete(); } catch { }
     } catch { }
-  }
-
-  static string Ruleset(string s) {
-    s = NoBom(s);
-    if (s.IndexOf('\r') >= 0) s = s.Replace("\r\n", "\n");
-    string[] L = Lines(s);
-    int start = 0;
-    if (L[0] == "---")
-      for (int i = 1; i < L.Length; i++) if (L[i] == "---") { start = i + 1; break; }
-    List<string> out1 = new List<string>();
-    bool skip = false;
-    for (int i = start; i < L.Length; i++) {
-      string l = L[i];
-      if (l.StartsWith("## ", StringComparison.Ordinal))
-        skip = (!Prose && l.StartsWith("## Prose", StringComparison.Ordinal)) || (!Code && l.StartsWith("## Code", StringComparison.Ordinal));
-      if (!skip) out1.Add(l);
-    }
-    s = string.Join("\n", out1.ToArray());
-    int a = 0;
-    while (a < s.Length && IsWs(s[a])) a++;
-    return s.Substring(a);
   }
 
   // ---------- UserPromptSubmit (5.2) ----------

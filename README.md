@@ -91,13 +91,12 @@ Use merge for shared or public branches. Use rebase to tidy up local, unpushed w
 
 | | The waste | What skinflint does |
 |---|---|---|
-| **Prose** | Preambles, recaps, hedging, headings and bullet walls nobody asked for | A short ruleset at session start, and a one-line reminder with every prompt |
+| **Prose** | Preambles, recaps, hedging, headings and bullet walls nobody asked for | A one-line reminder with every prompt |
 | **Code** | Abstractions with one user, boilerplate "for later", new dependencies for a few lines | A decision ladder: reuse, standard library, platform, installed dependency, then the least new code |
 | **Tool output** | Build logs, test runs, stack traces and listings read into context and billed again every turn | Cleaned and cut before Claude reads it; errors kept; the full text saved to a file |
 
 ```mermaid
 flowchart LR
-    S(["Session start"]) -->|ruleset| M(["Claude"])
     U(["Every prompt"]) -->|one-line reminder| M
     A(["Every subagent"]) -->|same rules| M
     M -->|runs a tool| T[["Bash, PowerShell, Grep, Glob,<br/>web, MCP, subagents"]]
@@ -119,11 +118,10 @@ off on every turn after.
 
 ### Answers and code
 
-- **Ruleset at session start**, and again after `/clear` or compaction, so the
-  rules are never summarised away. A resumed session gets a one-line nudge
-  instead of the whole ruleset again.
-- **A one-line reminder with every prompt**, so the rules steer every answer,
-  not only the first one after the session starts.
+- **A one-line reminder with every prompt**, so the rules steer every answer
+  and are never summarised away. Nothing longer is added: in testing, a full
+  ruleset at session start cost more as input than it saved, and the reminder
+  alone cut output as far. The full rules are in the `skinflint` skill.
 - **Code first, three lines after.** Code comes before any words about it,
   followed by at most three short lines on what was left out and when to add
   it. No second version, no usage demo, no test file nobody asked for, and
@@ -224,8 +222,8 @@ is no second reply to compare, and that measured ratio is applied to what was
 written. The plugin counts the length of each final reply and keeps none of
 its text.
 
-The net can be small or negative in a short session, because the ruleset is
-added once per session and the reminder once per prompt whatever the replies
+The net can be small or negative in a short session, because the reminder is
+added once per prompt whatever the replies
 come to. Bytes also understate the money side: trimmed tool output and the
 plugin's own text are input, while replies are output, which costs several
 times more per token.

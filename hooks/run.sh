@@ -595,35 +595,10 @@ function reminder(   s) {
 
 # ---------- SessionStart (5.1) ----------
 
-function hook_activate(   src, body) {
+function hook_activate(   src) {
   src = jstr(ROOT, "source")
-  if (MODE == "off") return src == "startup" ? 4 : 0
-  if (src == "resume" || src == "fork") {
-    printf "%s", ctx("SessionStart", UP " ON (resumed). The rules are already in this conversation; the skinflint skill has them if not.")
-    return 0
-  }
-  sections()
-  body = ruleset(readfile(PLUGIN "/skills/skinflint/SKILL.md"))
-  printf "%s", ctx("SessionStart", UP " ON\n\n" body)
+  if (MODE == "on") printf "%s", ctx("SessionStart", UP " ON.")
   return src == "startup" ? 4 : 0
-}
-
-function ruleset(s,   lines, n, i, k, out, skip, start) {
-  s = no_bom(s)
-  if (index(s, "\r")) s = swap(s, "\r\n", "\n")
-  n = lines_of(s, lines)
-  start = 1
-  if (lines[1] == "---")
-    for (i = 2; i <= n; i++) if (lines[i] == "---") { start = i + 1; break }
-  k = 0; skip = 0
-  for (i = start; i <= n; i++) {
-    if (substr(lines[i], 1, 3) == "## ")
-      skip = (!PROSE && substr(lines[i], 1, 8) == "## Prose") || (!CODE && substr(lines[i], 1, 7) == "## Code")
-    if (!skip) out[++k] = lines[i]
-  }
-  s = join(out, 1, k, "\n")
-  sub(/^[ \t\n\r\013\014]+/, "", s)
-  return s
 }
 
 # ---------- UserPromptSubmit (5.2) ----------
