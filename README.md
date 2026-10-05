@@ -237,7 +237,7 @@ Measured in the benchmarks below, or read from each plugin's own code:
 | Tool-using tasks: checks passed | 24/24 | 24/24 | 24/24 | 24/24 |
 | Trims tool output | **yes, 4.2%** | yes, 4.0% | no | no |
 | Needs a runtime | **no** | Node.js | Node.js | Node.js |
-| Prompt hook, Linux / Windows Git Bash | **7 ms / 95 ms** | 40 ms / 120 ms | 39 ms / 105 ms | 44 ms / 163 ms |
+| Prompt hook, Linux / Windows Git Bash | **7 ms / 79 ms** | 38 ms / 102 ms | 38 ms / 92 ms | 44 ms / 146 ms |
 | Works on Windows without Git Bash | **yes** | yes | yes | no, its hooks fail under PowerShell |
 | Trims PowerShell tool output (Windows' default shell tool) | **yes** | no | no tool-output trimming | no tool-output trimming |
 | Steers subagents | **yes** | no | yes | no |
@@ -361,8 +361,8 @@ and a running total.
 
 ## Numbers
 
-Everything in this section except the hook timings and the tool-output replay
-was measured in one run on 2026-10-05: skinflint 0.4.0,
+Everything in this section except the tool-output replay was measured on
+2026-10-05; the benchmark figures come from one run: skinflint 0.4.0,
 [chisle](https://github.com/JayPokale/Chisle) at commit `c200401`, [ponytail](https://github.com/dietrichgebert/ponytail) at `c982cd4` and [caveman](https://github.com/JuliusBrussee/caveman) at
 `6571943`, each loaded as a real plugin through `claude -p` on Claude Opus
 5.5, three times per task. Every run happens in a throwaway configuration that
@@ -529,9 +529,9 @@ Reproduce everything from a clone of it with
 `python3 benchmarks/agentic/analyze-agentic.py OUTDIR`
 and, for tool output,
 `python3 benchmarks/replay.py --arm skinflint='sh <dir>/hooks/run.sh compress' ~/.claude/projects --out R.json`.
-The data behind every benchmark number here is in
+The data behind every benchmark number and hook timing here is in
 [`benchmarks/results/2026-10-05/`](https://github.com/SkYn3t-Lab/skinflint-tests/tree/main/benchmarks/results/2026-10-05);
-the replay and the hook timings are in
+the replay is in
 [`benchmarks/results/2026-09-30/`](https://github.com/SkYn3t-Lab/skinflint-tests/tree/main/benchmarks/results/2026-09-30).
 
 ### Faster hooks
@@ -539,8 +539,10 @@ the replay and the hook timings are in
 Every hook Claude Code runs costs time on every prompt, tool call and session
 start. Each plugin's own hook commands were timed the way Claude Code runs
 them, as medians of 41 interleaved rounds so that load on the machine falls on
-every plugin alike, with [`benchmarks/speed.py`](https://github.com/SkYn3t-Lab/skinflint-tests/blob/main/benchmarks/speed.py) on Linux
-and [`benchmarks/speed.ps1`](https://github.com/SkYn3t-Lab/skinflint-tests/blob/main/benchmarks/speed.ps1) on Windows 11.
+every plugin alike, on 2026-10-05, with [`benchmarks/speed.py`](https://github.com/SkYn3t-Lab/skinflint-tests/blob/main/benchmarks/speed.py) on Linux
+and [`benchmarks/speed.ps1`](https://github.com/SkYn3t-Lab/skinflint-tests/blob/main/benchmarks/speed.ps1) on Windows 11. The three plugins that need Node.js ran on the current
+long-term-support release, 22.23.3, from nodejs.org; an older Node.js starts
+more slowly and would add to their times.
 
 <p align="center"><picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/SkYn3t-Lab/skinflint-tests/main/assets/charts/speed-dark.png">
@@ -549,32 +551,32 @@ and [`benchmarks/speed.ps1`](https://github.com/SkYn3t-Lab/skinflint-tests/blob/
 
 | Linux, ms | startup | prompt | subagent | 30 KB log | 150 KB log | 150 KB JSON |
 |---|--:|--:|--:|--:|--:|--:|
-| **skinflint** | **10** | **7** | **7** | **12** | **16** | **15** |
-| [chisle](https://github.com/JayPokale/Chisle) | 136 | 40 | no hook | 69 | 75 | 66 |
-| [ponytail](https://github.com/dietrichgebert/ponytail) | 36 | 39 | 42 | no hook | no hook | no hook |
+| **skinflint** | **10** | **7** | **7** | **10** | **12** | **14** |
+| [chisle](https://github.com/JayPokale/Chisle) | 134 | 38 | no hook | 57 | 58 | 60 |
+| [ponytail](https://github.com/dietrichgebert/ponytail) | 37 | 38 | 32 | no hook | no hook | no hook |
 | [caveman](https://github.com/JuliusBrussee/caveman) | 43 | 44 | no hook | no hook | no hook | no hook |
 
 | Windows 11, ms | startup | prompt | subagent | small output | 3000 lines | 30 KB log |
 |---|--:|--:|--:|--:|--:|--:|
-| **skinflint**, Git Bash | **100** | **95** | **95** | **98** | **120** | **125** |
-| [chisle](https://github.com/JayPokale/Chisle), Git Bash | 260 | 120 | no hook | 122 | 153 | 150 |
-| [ponytail](https://github.com/dietrichgebert/ponytail), Git Bash | 109 | 105 | 104 | no hook | no hook | no hook |
-| [caveman](https://github.com/JuliusBrussee/caveman), Git Bash | 167 | 163 | no hook | no hook | no hook | no hook |
-| **skinflint**, PowerShell 5.1 | **166** | **164** | **162** | **167** | **194** | **194** |
-| [chisle](https://github.com/JayPokale/Chisle), PowerShell 5.1 | 331 | 188 | no hook | 188 | 220 | 224 |
-| [ponytail](https://github.com/dietrichgebert/ponytail), PowerShell 5.1 | 193 | 186 | 182 | no hook | no hook | no hook |
+| **skinflint**, Git Bash | **80** | **79** | **81** | **82** | **102** | **106** |
+| [chisle](https://github.com/JayPokale/Chisle), Git Bash | 197 | 102 | no hook | 103 | 138 | 134 |
+| [ponytail](https://github.com/dietrichgebert/ponytail), Git Bash | 94 | 92 | 88 | no hook | no hook | no hook |
+| [caveman](https://github.com/JuliusBrussee/caveman), Git Bash | 145 | 146 | no hook | no hook | no hook | no hook |
+| **skinflint**, PowerShell 5.1 | **183** | **182** | **189** | **187** | **216** | **220** |
+| [chisle](https://github.com/JayPokale/Chisle), PowerShell 5.1 | 303 | 209 | no hook | 211 | 248 | 245 |
+| [ponytail](https://github.com/dietrichgebert/ponytail), PowerShell 5.1 | 210 | 212 | 208 | no hook | no hook | no hook |
 | [caveman](https://github.com/JuliusBrussee/caveman), PowerShell 5.1 | fails | fails | no hook | no hook | no hook | no hook |
-| **skinflint**, PowerShell 7 | **317** | **301** | **316** | **322** | **363** | **366** |
-| [chisle](https://github.com/JayPokale/Chisle), PowerShell 7 | 494 | 343 | no hook | 346 | 383 | 371 |
-| [ponytail](https://github.com/dietrichgebert/ponytail), PowerShell 7 | 344 | 336 | 347 | no hook | no hook | no hook |
+| **skinflint**, PowerShell 7 | **286** | **288** | **305** | **292** | **334** | **338** |
+| [chisle](https://github.com/JayPokale/Chisle), PowerShell 7 | 411 | 319 | no hook | 316 | 363 | 361 |
+| [ponytail](https://github.com/dietrichgebert/ponytail), PowerShell 7 | 310 | 312 | 315 | no hook | no hook | no hook |
 | [caveman](https://github.com/JuliusBrussee/caveman), PowerShell 7 | fails | fails | no hook | no hook | no hook | no hook |
 
 The fastest time in each column and shell is in bold. "no hook" means the
 plugin does not run anything at that point (ponytail and caveman do not trim
 tool output at all). caveman's hook commands are written in shell syntax, so
 they fail under PowerShell, which Claude Code uses on Windows when Git Bash is
-not installed. ponytail's prompt hook prints nothing on an ordinary prompt: it
-only reports mode changes. skinflint needs no runtime: on Linux a hook is one
+not installed. ponytail's prompt and subagent hooks print nothing on an ordinary
+prompt: they only report mode changes. skinflint needs no runtime: on Linux a hook is one
 `sh` and one `awk`; on Windows, Git Bash runs the compiled program directly,
 and PowerShell loads it into the PowerShell that is already running, so no
 second process starts.

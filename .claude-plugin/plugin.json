@@ -1,6 +1,6 @@
 {
   "name": "skinflint",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "description": "Short answers, minimal code and shorter tool output for Claude Code, with nothing to install: POSIX sh and awk on Linux and macOS, a self-built exe on Windows.",
   "author": {
     "name": "Gr3yF0x87",
