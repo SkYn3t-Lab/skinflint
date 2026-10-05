@@ -20,7 +20,7 @@ Every token Claude writes, and every line of tool output it reads, is paid for
 again on each later turn. skinflint cuts the ones that carry nothing and
 keeps every one that carries a fact.
 
-<p align="center"><b>51% fewer output tokens than no plugin, the fewest of four plugins tested &middot; 4.2% of tool output trimmed before Claude reads it &middot; about $87 a month saved on one developer's real usage &middot; zero dependencies</b></p>
+<p align="center"><b>59% fewer output tokens and 38% lower cost on everyday questions &middot; 29% fewer output tokens and 28% lower cost on tool-using tasks &middot; the lowest of four plugins tested on both &middot; zero dependencies</b></p>
 
 - **Tighter answers.** The answer first, the likely cause and its fix, no
   filler, no recap, no wall of headings and bullets.
@@ -36,29 +36,22 @@ keeps every one that carries a fact.
   Windows from Git Bash, PowerShell 5.1 and PowerShell 7, skinflint's hooks
   finish first (see [Faster hooks](#faster-hooks)).
 - **Tested to the byte.** One written [specification](SPEC.md), two
-  implementations, 176 test cases that must produce identical bytes on both.
+  implementations, 188 test cases that must produce identical bytes on both.
 
 Same model, same question, one difference: skinflint. Both answers are
-verbatim from the [benchmark run](https://github.com/SkYn3t-Lab/skinflint-tests/blob/main/benchmarks/results/2026-09-30/cells.jsonl),
-except that headings are shown in bold so they do not become sections of this
-page:
+verbatim from the [benchmark run](https://github.com/SkYn3t-Lab/skinflint-tests/tree/main/benchmarks/results/2026-10-05/questions/runs),
+the first repetition of each:
 
 > What is the difference between git merge and git rebase?
 
 <table>
-<tr><th align="left" width="50%">No plugin: 670 output tokens</th>
-<th align="left" width="50%">skinflint: 182 output tokens</th></tr>
+<tr><th align="left" width="50%">No plugin: 552 output tokens</th>
+<th align="left" width="50%">skinflint: 264 output tokens</th></tr>
 <tr valign="top"><td>
 
-Both commands integrate changes from one branch into another. They differ in how they record that in history.
+Both integrate changes from one branch into another; they differ in what they do to history.
 
-**Merge**
-
-`git merge feature`, run from `main`, creates a new **merge commit** with two parents. It joins the two lines of history.
-
-- Existing commits are left unchanged.
-- History shows exactly what happened, including when branches diverged and rejoined.
-- Repeated merges can make the log branchy and noisy.
+**Merge** ties the two branches together with a new merge commit that has both as parents. Existing commits are untouched.
 
 ```
 A---B---C---M   main
@@ -66,23 +59,23 @@ A---B---C---M   main
       D---E     feature
 ```
 
-**Rebase**
+**Rebase** replays your commits one by one on top of the target branch, creating new commits with new hashes. The result is a straight line, as if you had started your work from the latest tip.
 
-`git rebase main`, run from `feature`, takes your branch's commits and **replays them** on top of the target branch's tip. Each replayed commit is a new commit with a new hash.
+```
+A---B---C---D'---E'   feature (rebased onto main)
+```
 
-- The result is a linear history with no merge commit.
-- The log is easier to read and `git bisect` is easier to use.
-- Commits are rewritten, so the original timeline is lost.
-
-*... 22 more lines*
+*... 16 more lines*
 
 </td><td>
 
-`git merge` joins two branches by creating a new merge commit with two parents. History stays exactly as it happened, including the branch point, but it becomes non-linear.
+Both integrate changes from one branch into another, but merge preserves history as it happened while rebase rewrites it to be linear.
 
-`git rebase` replays your branch's commits one by one on top of another branch's tip, creating new commits with new hashes. History becomes a straight line, but the original commits are rewritten.
+`git merge feature` ties the two branches together with a new merge commit that has both as parents; existing commits are untouched, so it is safe on shared branches, at the cost of a branching, sometimes noisy history.
 
-Use merge for shared or public branches. Use rebase to tidy up local, unpushed work before merging. Never rebase commits others have already pulled, because rewriting them forces everyone else to reconcile diverged history.
+`git rebase main` replays your branch's commits one by one on top of `main`, creating new commits with new hashes; the result is a straight line with no merge commit, but anyone else who has the old commits will now have a diverged branch.
+
+The practical rule: rebase local, unpushed work to tidy it up before sharing, and merge once a branch is public. If you do rebase a pushed branch, you must force-push (`git push --force-with-lease`), which is only safe when nobody else is working on it.
 
 </td></tr>
 </table>
@@ -211,12 +204,13 @@ them into four figures:
 | Figure | Where it comes from |
 |---|---|
 | Tool output trimmed | Measured: the bytes removed from tool results, and how many results were shortened |
-| Replies | Estimated: the bytes of the replies Claude actually wrote, times 51/49 |
+| Replies | Estimated: the bytes of the replies Claude actually wrote, times 33/67 |
 | Cost of the plugin | Measured: the bytes of rules and reminders skinflint itself added to your conversations |
 | Net | The first two minus the third |
 
-Only the reply figure is an estimate. The benchmark below ran the same tasks
-with and without the plugin, and with it Claude wrote 49% of the output; in
+Only the reply figure is an estimate. The benchmark below ran the same
+tool-using tasks with and without the plugin, and with it Claude's final
+replies were 67% of the size; in
 your own sessions each prompt is answered once, with the plugin on, so there
 is no second reply to compare, and that measured ratio is applied to what was
 written. The plugin counts the length of each final reply and keeps none of
@@ -234,9 +228,13 @@ Measured in the benchmarks below, or read from each plugin's own code:
 
 | | skinflint | [chisle](https://github.com/JayPokale/Chisle) | [ponytail](https://github.com/dietrichgebert/ponytail) | [caveman](https://github.com/JuliusBrussee/caveman) |
 |---|---|---|---|---|
-| Output tokens, 20 tasks (% of no plugin) | **49%** | 63% | 67% | 75% |
-| Worst task (% of no plugin) | **68%** | 80% | 110% | 105% |
-| Correct answers | 54/56 | 54/56 | 55/56 | 55/56 |
+| Questions: output tokens (% of no plugin) | **41%** | 73% | 87% | 72% |
+| Questions: cost (% of no plugin) | **62%** | 84% | 98% | 93% |
+| Questions: worst single one (% of no plugin) | **86%** | 209% | 233% | 109% |
+| Questions: answers graded correct (no plugin 58/60) | 58/60 | 53/60 | 58/60 | 54/60 |
+| Tool-using tasks: output tokens (% of no plugin) | **71%** | 87% | 95% | 94% |
+| Tool-using tasks: cost (% of no plugin) | **72%** | 82% | 98% | 90% |
+| Tool-using tasks: checks passed | 24/24 | 24/24 | 24/24 | 24/24 |
 | Trims tool output | **yes, 4.2%** | yes, 4.0% | no | no |
 | Needs a runtime | **no** | Node.js | Node.js | Node.js |
 | Prompt hook, Linux / Windows Git Bash | **7 ms / 95 ms** | 40 ms / 120 ms | 39 ms / 105 ms | 44 ms / 163 ms |
@@ -363,81 +361,131 @@ and a running total.
 
 ## Numbers
 
-### Fewer output tokens
+Everything in this section except the hook timings and the tool-output replay
+was measured in one run on 2026-10-05: skinflint 0.4.0,
+[chisle](https://github.com/JayPokale/Chisle) at commit `c200401`, [ponytail](https://github.com/dietrichgebert/ponytail) at `c982cd4` and [caveman](https://github.com/JuliusBrussee/caveman) at
+`6571943`, each loaded as a real plugin through `claude -p` on Claude Opus
+5.5, three times per task. Every run happens in a throwaway configuration that
+holds nothing but the login, inside a sandbox in which the home directory is
+empty, so the plugin is the only difference between two runs of a task. None
+of the 465 runs ended in an error, and the transcripts of the 165 tool-using
+runs confirm that each plugin's hooks loaded in every one of its runs.
 
-Twenty everyday developer requests, five each of short and long coding tasks
-and short and long explanations, sent through `claude -p` on Claude Sonnet 5.5.
-Each plugin is loaded as a real plugin, in a throwaway configuration that holds
-nothing but the login, so the plugin is the only difference. Every request ran
-twice per arm (`cache`, `envvar`, `ratelimit`, `restgraphql` ran 6 times, to
-settle close results), and a separate blind judge graded every answer for
-correctness without knowing which plugin wrote it. Plugins:
-[chisle](https://github.com/JayPokale/Chisle) 3.5.0,
-[ponytail](https://github.com/dietrichgebert/ponytail) 4.10.0,
-[caveman](https://github.com/JuliusBrussee/caveman) 2.7.0.
+Three repetitions leave noise: the same skinflint version measured 85% of
+no-plugin cost on the tool-using tasks one day and 72% the next. Read a single
+figure as good to about ten points. The order of the four plugins was the same
+in every run.
+
+### Everyday questions
+
+Twenty developer requests, five each of short and long coding tasks and short
+and long explanations. A separate judge, which sees only the question and the
+answer and never which plugin wrote it, graded every answer for correctness.
 
 <p align="center"><picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/SkYn3t-Lab/skinflint-tests/main/assets/charts/output-overall-dark.png">
-  <img src="https://raw.githubusercontent.com/SkYn3t-Lab/skinflint-tests/main/assets/charts/output-overall-light.png" width="720" alt="Output tokens as a share of no plugin: skinflint 49%, chisle 63%, ponytail 67%, caveman 75%">
+  <img src="https://raw.githubusercontent.com/SkYn3t-Lab/skinflint-tests/main/assets/charts/output-overall-light.png" width="720" alt="Output tokens as a share of no plugin: skinflint 41%, chisle 73%, ponytail 87%, caveman 72%">
 </picture></p>
 
-| Plugin | Output tokens, all tasks | Average task | Worst task | Tasks longer than no plugin | Correct answers |
-|---|--:|--:|--:|--:|--:|
-| **skinflint** | **49%** | **46%** | **68%** (ratelimit) | **0** | 54/56 |
-| [chisle](https://github.com/JayPokale/Chisle) | 63% | 62% | 80% (unrelated) | 0 | 54/56 |
-| [ponytail](https://github.com/dietrichgebert/ponytail) | 67% | 67% | 110% (retry) | 1 | **55/56** |
-| [caveman](https://github.com/JuliusBrussee/caveman) | 75% | 73% | 105% (cache) | 2 | **55/56** |
-| no plugin | 100% | 100% | 100% | 0 | 54/56 |
+| Plugin | Output tokens, all questions | Cost | Average question | Worst question | Questions longer than no plugin | Answers graded correct |
+|---|--:|--:|--:|--:|--:|--:|
+| **skinflint** | **41%** | **62%** | **46%** | **86% (offbyone)** | **0** | 58/60 |
+| [chisle](https://github.com/JayPokale/Chisle) | 73% | 84% | 95% | 209% (envvar) | 4 | 53/60 |
+| [ponytail](https://github.com/dietrichgebert/ponytail) | 87% | 98% | 94% | 233% (retry) | 6 | 58/60 |
+| [caveman](https://github.com/JuliusBrussee/caveman) | 72% | 93% | 68% | 109% (migration) | 1 | 54/60 |
+| no plugin | 100% | 100% | 100% | 100% | 0 | 58/60 |
 
-Output tokens are a share of what the same model wrote with no plugin, so lower
-is better. skinflint is shortest overall, in every kind of task, and has the
-best worst case; no task came out longer than without it.
-
-Correctness is a tie: the plugins are one answer apart out of 56, and the
-answers they missed were spread across plugins rather than piling up in one.
-The extra runs on four tasks exist to check exactly that.
+Output tokens and cost are a share of what the same model wrote and cost with
+no plugin, so lower is better. Cost is what Claude Code reported for each run
+at list price, so it includes the text each plugin adds to the conversation.
+skinflint is shortest overall and in every kind of question, has the best
+worst case, and no question came out longer than without it. Its answers were
+graded correct as often as answers written with no plugin.
 
 <p align="center"><picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/SkYn3t-Lab/skinflint-tests/main/assets/charts/output-by-kind-dark.png">
-  <img src="https://raw.githubusercontent.com/SkYn3t-Lab/skinflint-tests/main/assets/charts/output-by-kind-light.png" width="720" alt="Output tokens by kind of task for each plugin">
+  <img src="https://raw.githubusercontent.com/SkYn3t-Lab/skinflint-tests/main/assets/charts/output-by-kind-light.png" width="720" alt="Output tokens by kind of question for each plugin">
 </picture></p>
 
-| Kind of task | skinflint | [chisle](https://github.com/JayPokale/Chisle) | [ponytail](https://github.com/dietrichgebert/ponytail) | [caveman](https://github.com/JuliusBrussee/caveman) |
+| Kind of question | skinflint | [chisle](https://github.com/JayPokale/Chisle) | [ponytail](https://github.com/dietrichgebert/ponytail) | [caveman](https://github.com/JuliusBrussee/caveman) |
 |---|--:|--:|--:|--:|
-| Coding, short | **42%** | 58% | 70% | 87% |
-| Coding, long | **56%** | 64% | 63% | 84% |
-| Explaining, short | **38%** | 62% | 66% | 57% |
-| Explaining, long | **49%** | 63% | 69% | 71% |
+| Coding, short | **41%** | 111% | 127% | 77% |
+| Coding, long | **36%** | 67% | 78% | 68% |
+| Explaining, short | **41%** | 80% | 82% | 53% |
+| Explaining, long | **51%** | 77% | 97% | 81% |
 
 <details>
-<summary>Every task (skinflint shortest on 20 of 20)</summary>
+<summary>Every question (skinflint shortest on 19 of 20)</summary>
 
-| Task | Kind | No plugin, tokens | skinflint | chisle | ponytail | caveman |
+| Question | Kind | No plugin, tokens | skinflint | chisle | ponytail | caveman |
 |---|---|--:|--:|--:|--:|--:|
-| `debounce` | coding, short | 1018 | **43** | 65 | 62 | 94 |
-| `dedupe` | coding, short | 334 | **26** | 36 | 33 | 49 |
-| `envvar` | coding, short | 267 | **46** | 67 | 56 | 88 |
-| `offbyone` | coding, short | 158 | **50** | 71 | 59 | 61 |
-| `retry` | coding, short | 617 | **45** | 52 | 110 | 102 |
-| `cache` | coding, long | 1502 | **56** | 64 | 57 | 105 |
-| `migration` | coding, long | 1178 | **64** | 76 | 71 | 87 |
-| `statemachine` | coding, long | 2122 | **28** | 43 | 48 | 78 |
-| `csvreport` | coding, long | 2018 | **62** | 69 | 63 | 78 |
-| `ratelimit` | coding, long | 3209 | **68** | 69 | 73 | 82 |
-| `backref` | explain, short | 198 | **49** | 74 | 89 | 55 |
-| `pooling` | explain, short | 1243 | **32** | 51 | 60 | 53 |
-| `gitrebase` | explain, short | 614 | **27** | 68 | 65 | 46 |
-| `unrelated` | explain, short | 623 | **52** | 80 | 72 | 79 |
-| `deadlock` | explain, short | 962 | **41** | 55 | 66 | 57 |
-| `restgraphql` | explain, long | 1238 | **30** | 31 | 62 | 55 |
-| `postmortem` | explain, long | 3036 | **64** | 65 | 86 | 80 |
-| `monolith` | explain, long | 2568 | **50** | 61 | 84 | 78 |
-| `apidesign` | explain, long | 4382 | **45** | 69 | 53 | 69 |
-| `rerender` | explain, long | 1436 | **47** | 70 | 63 | 57 |
+| `debounce` | coding, short | 1389 | **38** | 83 | 74 | 82 |
+| `dedupe` | coding, short | 263 | **37** | 86 | 50 | 43 |
+| `envvar` | coding, short | 221 | **51** | 209 | 153 | 52 |
+| `offbyone` | coding, short | 65 | **86** | 160 | 98 | 97 |
+| `retry` | coding, short | 840 | **41** | 136 | 233 | 84 |
+| `cache` | coding, long | 7693 | **17** | 32 | 30 | 34 |
+| `migration` | coding, long | 1717 | **75** | 98 | 109 | 109 |
+| `statemachine` | coding, long | 3710 | **18** | 60 | 55 | 77 |
+| `csvreport` | coding, long | 6104 | **70** | 89 | 97 | 89 |
+| `ratelimit` | coding, long | 8527 | **29** | 79 | 111 | 73 |
+| `backref` | explain, short | 189 | 49 | 160 | 70 | **39** |
+| `pooling` | explain, short | 947 | **33** | 66 | 89 | 55 |
+| `gitrebase` | explain, short | 563 | **49** | 71 | 86 | 55 |
+| `unrelated` | explain, short | 715 | **37** | 84 | 70 | 56 |
+| `deadlock` | explain, short | 872 | **47** | 79 | 83 | 52 |
+| `restgraphql` | explain, long | 987 | **27** | 77 | 79 | 61 |
+| `postmortem` | explain, long | 5733 | **51** | 54 | 104 | 93 |
+| `monolith` | explain, long | 1791 | **54** | 99 | 101 | 78 |
+| `apidesign` | explain, long | 4250 | **57** | 96 | 94 | 83 |
+| `rerender` | explain, long | 1776 | **46** | 80 | 83 | 54 |
 
 Figures are % of no plugin, the lowest in bold. Every prompt is in
 [`benchmarks/tasks.tsv`](https://github.com/SkYn3t-Lab/skinflint-tests/blob/main/benchmarks/tasks.tsv) and every answer with its grade
-in [`benchmarks/results/2026-09-30/cells.jsonl`](https://github.com/SkYn3t-Lab/skinflint-tests/blob/main/benchmarks/results/2026-09-30/cells.jsonl).
+in [`benchmarks/results/2026-10-05/questions/`](https://github.com/SkYn3t-Lab/skinflint-tests/tree/main/benchmarks/results/2026-10-05/questions).
+
+</details>
+
+### Tool-using tasks
+
+Questions show what a plugin does to an answer. Most Claude Code work is not
+that: Claude reads files, runs commands and edits code over several turns, and
+there a plugin's own text is paid for again on every one of them. So the same
+plugins were run on eight tasks in a small generated project, each with one
+planted problem (a failing test, an outage in a log, a script to extend, a
+convention to enforce) and a check that runs or reads what Claude left behind
+and passes or fails it.
+
+| Plugin | Cost | Output tokens | Input tokens | Turns | Final reply size | Checks passed |
+|---|--:|--:|--:|--:|--:|--:|
+| **skinflint** | **72%** | **71%** | **85%** | **80%** | **67%** | 24/24 |
+| [chisle](https://github.com/JayPokale/Chisle) | 82% | 87% | 107% | 88% | 76% | 24/24 |
+| [ponytail](https://github.com/dietrichgebert/ponytail) | 98% | 95% | 117% | 88% | 96% | 24/24 |
+| [caveman](https://github.com/JuliusBrussee/caveman) | 90% | 94% | 117% | 100% | 71% | 24/24 |
+| no plugin | 100% | 100% | 100% | 100% | 100% | 24/24 |
+
+Every plugin got every task right, so the difference is what it cost to get
+there. skinflint is the only one of the four that lowers input tokens: the
+others add several thousand bytes of rules to every session, which is sent
+again with each request, while skinflint adds one short reminder per prompt.
+
+<details>
+<summary>Every task, cost as % of no plugin</summary>
+
+| Task | What Claude was asked | No plugin, cost | skinflint | chisle | ponytail | caveman |
+|---|---|--:|--:|--:|--:|--:|
+| `bugfix` | The tests are failing. Find out why and fix it. | $0.09 | **97** | 113 | 122 | 115 |
+| `logs` | The api went down last night. Look at logs/service.log and tell me what happened. | $0.24 | **49** | 51 | 89 | 64 |
+| `dryrun` | Add a --dry-run option to scripts/backup.sh that shows what it would copy without copying anything, and update the README to match. | $0.14 | **70** | 79 | 88 | 98 |
+| `compose` | Does docker-compose.yml follow our conventions? Fix whatever does not. | $0.11 | **81** | 92 | 104 | 91 |
+| `mail` | Which scripts send mail without going through the shared helper? Fix them. | $0.11 | **86** | 104 | 104 | 107 |
+| `bump` | Bump the version to 1.4.0 everywhere. The change is a new --json flag on the low-stock report. | $0.11 | **79** | 93 | 104 | 93 |
+| `disk` | What is using the space under data/ ? | $0.07 | **83** | **83** | 90 | 94 |
+| `review` | Review app/inventory.py and tell me what is wrong with it. Do not change any file. | $0.09 | **64** | 82 | 95 | 99 |
+
+The lowest is in bold. The project generator, the prompts and the checks are in
+[`benchmarks/agentic/`](https://github.com/SkYn3t-Lab/skinflint-tests/blob/main/benchmarks/agentic), and every run with its verdict in
+[`benchmarks/results/2026-10-05/agentic/`](https://github.com/SkYn3t-Lab/skinflint-tests/tree/main/benchmarks/results/2026-10-05/agentic).
 
 </details>
 
@@ -445,7 +493,7 @@ in [`benchmarks/results/2026-09-30/cells.jsonl`](https://github.com/SkYn3t-Lab/s
 
 Output-token rules only shape what Claude writes; tool output is what it reads,
 and every line of it is sent again with each later request. To measure that
-part, 7,677 real tool results from 627 of the author's own Claude Code sessions
+part (on 2026-09-30; the trimming code has not changed since), 7,677 real tool results from 627 of the author's own Claude Code sessions
 were replayed through each plugin's PostToolUse hook, in session order, exactly
 as Claude Code would have sent them:
 
@@ -463,53 +511,27 @@ short preview of those.
 
 ### What it saves in dollars
 
-**About $87 a month, or roughly $1,040 a year, for one developer.** That is
-what skinflint would have saved on a month of the author's real Claude Code
-use: 7.0 million output tokens on Opus models, $160 of output at list price.
-
-| Plugin | Saved on what Claude writes | Saved on tool output it reads | Saved per month |
-|---|--:|--:|--:|
-| **skinflint** | **$81.74** | **$5.14** | **$86.88** |
-| [chisle](https://github.com/JayPokale/Chisle) | $59.30 | $4.89 | $64.20 |
-| [ponytail](https://github.com/dietrichgebert/ponytail) | $52.89 | no tool-output trimming | $52.89 |
-| [caveman](https://github.com/JuliusBrussee/caveman) | $40.07 | no tool-output trimming | $40.07 |
-
-In plain terms: Claude writes about half as many output tokens with
-skinflint, so roughly $51 of every $100 you spend on Claude's output stays in
-your pocket, and trimmed tool output saves a little more on top.
-
-**Your own number.** Run this from a clone of [skinflint-tests](https://github.com/SkYn3t-Lab/skinflint-tests)
-against your own Claude Code history; it reads
-token counts and sizes only, never the text of your sessions:
-
-```sh
-python3 benchmarks/usage.py ~/.claude/projects
-```
-
-<details>
-<summary>How the estimate is made</summary>
-
-For each model in the transcripts, the output tokens it produced are priced at
-Anthropic's list price and multiplied by the share each plugin removes in the
-head-to-head benchmark above. For tool output, the tokens read from the tools
-the replay covers are multiplied by the share each plugin removed in the
-replay; each removed token is paid once when first read (a prompt-cache write,
-1.25 times the input price) and again on every later request that re-reads it
-from the cache, which in these sessions was a median of 80 requests before the
-session ended or was compacted. Months are 30 days. It is an estimate: your
-bill also depends on how much of it is output, on caching, and on how long
-your sessions run.
-
-</details>
+The cost columns above are the answer, measured and not extrapolated: Claude
+Code reports what each run cost at list price, and with skinflint the same
+work cost 72% of the no-plugin price on tool-using tasks and 62% on
+questions. On $100 of Claude Code use that is roughly $28 to $38
+kept, depending on how much of the work is tools and how much is answers.
+Trimmed tool output adds to that in long sessions, where every line read is
+sent again on each later turn; the benchmark tasks are too short to show it.
 
 The benchmark scripts and their results live in their own repository,
 [skinflint-tests](https://github.com/SkYn3t-Lab/skinflint-tests), so that installing the plugin does not download them.
 Reproduce everything from a clone of it with
-`ARMS="none:- skinflint:<dir> ..." bash benchmarks/run-arms.sh OUTDIR`,
+`ARMS="none:- skinflint:<dir> ..." bash benchmarks/run-arms-sandboxed.sh OUTDIR 3 claude-opus-5-5`,
 `bash benchmarks/grade.sh OUTDIR GRADES.json`,
 `python3 benchmarks/analyze-arms.py OUTDIR GRADES.json`,
-`python3 benchmarks/replay.py --arm skinflint='sh <dir>/hooks/run.sh compress' ~/.claude/projects --out R.json`
-and `python3 benchmarks/usage.py`. The data behind every number here is in
+`ARMS="none:- skinflint:<dir> ..." bash benchmarks/agentic/run-agentic.sh OUTDIR 3 claude-opus-5-5`,
+`python3 benchmarks/agentic/analyze-agentic.py OUTDIR`
+and, for tool output,
+`python3 benchmarks/replay.py --arm skinflint='sh <dir>/hooks/run.sh compress' ~/.claude/projects --out R.json`.
+The data behind every benchmark number here is in
+[`benchmarks/results/2026-10-05/`](https://github.com/SkYn3t-Lab/skinflint-tests/tree/main/benchmarks/results/2026-10-05);
+the replay and the hook timings are in
 [`benchmarks/results/2026-09-30/`](https://github.com/SkYn3t-Lab/skinflint-tests/tree/main/benchmarks/results/2026-09-30).
 
 ### Faster hooks

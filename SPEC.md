@@ -84,10 +84,11 @@ is left unchanged and nothing is added.
 All five are measured. What the plugin saved on replies is not among them: in
 a live session each prompt is answered once, with the plugin on, so the reply
 Claude would have written without it does not exist. The benchmark did
-measure both, by running the same tasks with and without the plugin, and with
-it Claude wrote 49% of the output. Readers of this file (the stats skill and
-the status line) apply that measured ratio to the replies counted here,
-`reply * 51 / 49`, and say that the result is an estimate.
+measure both, by running the same tool-using tasks with and without the
+plugin, and with it Claude's final replies were 67% of the size. Readers of
+this file (the stats skill and the status line) apply that measured ratio to
+the replies counted here, `reply * 33 / 67`, and say that the result is an
+estimate.
 
 **Config file**: `$XDG_CONFIG_HOME/skinflint/config.json`, else
 `$HOME/.config/skinflint/config.json` (`%APPDATA%\skinflint\config.json`

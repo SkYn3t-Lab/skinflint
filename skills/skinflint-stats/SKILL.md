@@ -17,10 +17,10 @@ Report four figures, each in bytes and in tokens (bytes divided by 4,
 rounded), one short line each:
 
 1. Tool output trimmed: `saved`, across `events` tool results. Measured.
-2. Replies: `reply * 51 / 49`, across `replies` replies. Say plainly that
+2. Replies: `reply * 33 / 67`, across `replies` replies. Say plainly that
    this one is an estimate built on a measurement: the plugin's benchmark ran
-   the same tasks with and without the plugin, and with it Claude wrote 49% of
-   the output. That measured ratio is applied here to the replies actually
+   the same tool-using tasks with and without the plugin, and with it Claude's
+   final replies were 67% of the size. That measured ratio is applied here to the replies actually
    written, because in a live session each prompt is answered only once, with
    the plugin on, so there is no second reply to compare against.
 3. Cost of the plugin: `injected`, the rules and reminders it adds to the
