@@ -89,8 +89,9 @@ The practical rule: rebase local, unpushed work to tidy it up before sharing, an
 | **Tool output** | Build logs, test runs, stack traces and listings read into context and billed again every turn | Cleaned and cut before Claude reads it; errors kept; the full text saved to a file |
 
 ```mermaid
+%%{init: {"flowchart": {"curve": "basis", "wrappingWidth": 320}}}%%
 flowchart LR
-    U(["Every prompt"]) -->|one-line reminder| M
+    U(["Every prompt"]) -->|one-line reminder| M(["Claude"])
     A(["Every subagent"]) -->|same rules| M
     M -->|runs a tool| T[["Bash, PowerShell, Grep, Glob,<br/>web, MCP, subagents"]]
     T -->|raw output| C["skinflint:<br/>clean, fold, cut, save"]
