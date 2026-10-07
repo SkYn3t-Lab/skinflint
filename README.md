@@ -97,6 +97,7 @@ flowchart LR
     T -->|raw output| C["skinflint:<br/>clean, fold, cut, save"]
     C -->|same shape, far smaller| M
     R["Read / Edit / Write"] -.->|never touched| M
+    linkStyle default interpolate basis
     style M fill:#0B0F14,stroke:#1FE0C4,color:#e6edf3
     style C fill:#0B0F14,stroke:#E040FB,color:#e6edf3
     style R fill:#1f1f1f,stroke:#6e7681,color:#c9d1d9
