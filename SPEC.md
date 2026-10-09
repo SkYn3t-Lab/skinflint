@@ -85,10 +85,18 @@ All five are measured. What the plugin saved on replies is not among them: in
 a live session each prompt is answered once, with the plugin on, so the reply
 Claude would have written without it does not exist. The benchmark did
 measure both, by running the same tool-using tasks with and without the
-plugin, and with it Claude's final replies were 67% of the size. Readers of
+plugin, and with it Claude's final replies were 56% of the size. Readers of
 this file (the stats skill and the status line) apply that measured ratio to
-the replies counted here, `reply * 33 / 67`, and say that the result is an
+the replies counted here, `reply * 44 / 56`, and say that the result is an
 estimate.
+
+The stats skill also gives the net in dollars. `saved` and `injected` are
+input and replies are output, which costs five times as much per token on
+every current Claude model, so the reply estimate counts five times:
+`(saved - injected + 5 * reply * 44 / 56) / 4` tokens at $4 per million, the
+API input price of Claude Opus 5.5. The price is written by hand here, in
+`skills/skinflint-stats/SKILL.md` and in the README section "Seeing what it
+saves".
 
 **Config file**: `$XDG_CONFIG_HOME/skinflint/config.json`, else
 `$HOME/.config/skinflint/config.json` (`%APPDATA%\skinflint\config.json`
@@ -363,10 +371,11 @@ bytes saved and `events` gains 1.
 
 ### 5.1 SessionStart
 
-Mode `off`: no output. Otherwise, for every source, the one line
-`SKINFLINT ON.`. The rules themselves reach the conversation as the reminder
-line (section 6) with each prompt; the full text in
-`skills/skinflint/SKILL.md` is read only when the skill is invoked.
+Mode `off`: no output. Otherwise, for every source, the reminder line
+(section 6). This is where the rules reach the conversation: once when the
+session starts, and again after `/clear` or a compaction, each of which
+removes the earlier copy and fires this hook with that source. The full text
+in `skills/skinflint/SKILL.md` is read only when the skill is invoked.
 
 Printed as
 `{"hookSpecificOutput":{"hookEventName":"SessionStart","additionalContext":X}}`.
@@ -389,9 +398,12 @@ one of:
 A sentence that merely contains one of these is not a switch. A switch
 writes `<sid>.mode`. Then: when the resulting mode is `off` and this prompt
 switched it, the context is
-`SKINFLINT OFF. Write normally until the user turns it back on.`; when the
-mode is `on`, the context is the reminder line (section 6); otherwise there
-is no output. Printed as
+`SKINFLINT OFF. Write normally until the user turns it back on.`; when this
+prompt switched the mode `on`, the context is the reminder line (section 6),
+because a session that started `off` has not seen the rules; when the mode
+is `on` and the prompt is not a switch, the context is the one line
+`SKINFLINT ON.`, which points back at the rules the session already holds;
+otherwise there is no output. Printed as
 `{"hookSpecificOutput":{"hookEventName":"UserPromptSubmit","additionalContext":X}}`.
 
 ### 5.3 SubagentStart
@@ -410,16 +422,17 @@ string: in `STATE/stats`, `reply` gains the bytes of that string and
 ## 6. Reminder line
 
 `SKINFLINT ON.`, then ` Prose: answer first, then only what the user
-needs to act; for a problem, the likely cause and its fix, not every
-possibility; for a comparison, the pick first, then at most three
+needs to act; a question with one answer gets one or two sentences; for a
+problem, the likely cause and its fix, not every possibility; for a comparison, the pick first, then at most three
 one-sentence reasons; sentences, no headings or bullet lists (number steps
 only when they run in order).` when `prose` is on, then ` Code: smallest
 change that works, reuse before writing, nothing speculative; the code
-first, then at most three short lines on what you left out and when to add
-it; no alternatives, demos or tests unless asked; when asked to write or
+first, then one line only if the user must change something to use it; no
+alternatives, demos or tests unless asked; when asked to write or
 show code, reply with it and create no file unless the user named one.` when
 `code` is on, then
-` Code, commit messages and security warnings stay in full sentences.`
+` Code, commit messages and security warnings stay in full sentences. Apply
+these rules at once, without weighing them.`
 
 ## 7. Failure behaviour
 

@@ -480,16 +480,16 @@ function sections(   i, p, raw, id, v, st) {
 function reminder(   s) {
   sections()
   s = UP " ON."
-  if (PROSE) s = s " Prose: answer first, then only what the user needs to act; for a problem, the likely cause and its fix, not every possibility; for a comparison, the pick first, then at most three one-sentence reasons; sentences, no headings or bullet lists (number steps only when they run in order)."
-  if (CODE) s = s " Code: smallest change that works, reuse before writing, nothing speculative; the code first, then at most three short lines on what you left out and when to add it; no alternatives, demos or tests unless asked; when asked to write or show code, reply with it and create no file unless the user named one."
-  return s " Code, commit messages and security warnings stay in full sentences."
+  if (PROSE) s = s " Prose: answer first, then only what the user needs to act; a question with one answer gets one or two sentences; for a problem, the likely cause and its fix, not every possibility; for a comparison, the pick first, then at most three one-sentence reasons; sentences, no headings or bullet lists (number steps only when they run in order)."
+  if (CODE) s = s " Code: smallest change that works, reuse before writing, nothing speculative; the code first, then one line only if the user must change something to use it; no alternatives, demos or tests unless asked; when asked to write or show code, reply with it and create no file unless the user named one."
+  return s " Code, commit messages and security warnings stay in full sentences. Apply these rules at once, without weighing them."
 }
 
 # ---------- SessionStart (5.1) ----------
 
 function hook_activate(   src) {
   src = jstr(ROOT, "source")
-  if (MODE == "on") printf "%s", ctx("SessionStart", UP " ON.")
+  if (MODE == "on") printf "%s", ctx("SessionStart", reminder())
   return src == "startup" ? 4 : 0
 }
 
@@ -507,7 +507,8 @@ function hook_prompt(   c, want) {
     if (SID != "" && CAN_WRITE) writefile(SESS "/" SID ".mode", want)
     MODE = want
   }
-  if (MODE == "on") printf "%s", ctx("UserPromptSubmit", reminder())
+  if (want == "on") printf "%s", ctx("UserPromptSubmit", reminder())
+  else if (MODE == "on") printf "%s", ctx("UserPromptSubmit", UP " ON.")
   else if (want == "off") printf "%s", ctx("UserPromptSubmit", UP " OFF. Write normally until the user turns it back on.")
   return 0
 }
